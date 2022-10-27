@@ -1,0 +1,233 @@
+---
+title: "Choropleth of discrete variables"
+output:
+  xaringan::moon_reader:
+    css: ["style.css", "default"]
+    lib_dir: libs
+    df_print: paged
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: 16:9
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r child = "setup.Rmd"}
+```
+
+```{r, include=FALSE, eval=TRUE}
+library("tidyverse")
+library("sf")
+library("rnaturalearthdata")
+library("maps")
+library("here")
+library("ggspatial")
+library("janitor")
+library("readxl")
+library("tidygeocoder")
+library("ggspatial")
+library("leaflet")
+library("ggrepel")
+library("scales")
+library("fontawesome")
+library("rmapshaper")
+library("tigris")
+library(leaflet)
+library(widgetframe)
+options(htmltools.preserve.raw = FALSE)
+```
+
+```{r, eval=TRUE, include=FALSE}
+# ==== Restaurant Data ====
+# Data obtained from https://www.factual.com/blog/factual-analysis-fast-food-chain-popularity/
+
+most_popular_streaming_service <- read_csv("data/most-popular-streaming-service.csv") %>% 
+  clean_names()
+
+us_contiguous <- states() %>% 
+  clean_names() %>% 
+  mutate(statefp = as.numeric(statefp)) %>% 
+  filter(statefp < 60,
+         !statefp %in% c(2, 15)) %>% 
+  ms_simplify()
+
+us_most_popular_streaming_sf <- us_contiguous %>% 
+  left_join(most_popular_streaming_service,
+            by = c("name" = "state"))
+
+colors_services <- list(
+  "Amazon Prime" = "#2A96D9",
+  "ESPN" = "#BE0002",
+  "Hulu" = "#35B12E",
+  "Netflix" = "black"
+)
+```
+
+
+
+class: center, middle, dk-section-title
+background-image:url("https://images.pexels.com/photos/7138817/pexels-photo-7138817.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260")
+background-size: cover
+
+# Choropleth of discrete variables
+
+---
+
+# Legends in {leaflet} maps
+
+{leaflet} provides four different kinds of legend which all use the same format.
+
+.pull-left[
+
+Discrete/categorical variables:
+
+- `colorFactor()`
+
+]
+
+.pull-right[
+
+Continuous variables:
+
+- `colorBin()`
+
+- `colorNumeric()`
+
+- `colorQuantile()`
+
+]
+
+---
+
+# Legends in {leaflet} maps
+
+There are 3 steps to adding legends to {leaflet}:
+
+1\. Create the color palette
+
+```{r}
+pal_for_map <- colorFactor("palette", your_data$choropleth_variable)
+```
+
+--
+
+2\. Use the palette function to change the `fillColor`
+
+```{r}
+addPolygons(fillColor = ~pal_for_map(choropleth_variable))
+```
+
+--
+
+3\. Add the legend to the chart
+
+```{r}
+addLegend(pal = pal_for_map,
+          values = ~choropleth_variable)
+```
+
+---
+
+class: my-turn
+
+# My turn
+
+.pull-left[
+I'm going to work on improving this chart in three ways:
+
+- Ordering the legend from most to least popular streaming service
+
+- Picking alternative color palettes
+
+- Specifying custom (manual) color palettes
+
+]
+
+.pull-right[
+```{r, eval=TRUE, echo=FALSE}
+pal_streaming_services <- colorFactor("Set2", us_most_popular_streaming_sf$streaming_service)
+
+us_most_popular_streaming_sf %>% 
+  leaflet() %>% 
+  addPolygons(weight = 1,
+              color = "white",
+              fillColor = ~pal_streaming_services(streaming_service),
+              fillOpacity = 1) %>% 
+  addLegend(pal = pal_streaming_services,
+            values = ~streaming_service,
+            opacity = 1) %>% 
+  frameWidget(height = "400px")
+```
+]
+
+---
+
+class: inverse
+
+## Your turn
+
+.pull-left[
+
+Use the `your-turn.R` script in `03_06` to make this map.
+
+- Use the custom colors.
+
+- Ensure the guide is ordered by size of region.
+
+- Add a title to the guide.
+
+]
+
+.pull-right[
+
+```{r, eval=TRUE, echo=FALSE}
+us_contiguous <- us_contiguous %>% 
+  mutate(region = case_when(region == 1 ~ "Northeast",
+                            region == 2 ~ "Midwest",
+                            region == 3 ~ "South",
+                            region == 4 ~ "West"))
+
+colors_of_regions <- list("Northeast" = "#c03728",
+                          "Midwest" = "#919c4c",
+                          "West" = "#fd8f24",
+                          "South" = "#f5c04a")
+us_contiguous <- us_contiguous %>% 
+  add_count(region) %>% 
+  mutate(region = fct_reorder(region, n),
+         region = fct_rev(region))
+
+order_of_regions <- us_contiguous %>% 
+  pull(region) %>% 
+  levels()
+
+ordered_colors <- unlist(colors_of_regions[order_of_regions], use.names = FALSE)
+
+pal_regions <- colorFactor(ordered_colors, us_contiguous$region)
+
+us_contiguous %>% 
+  leaflet() %>% 
+  addPolygons(fillColor = ~pal_regions(region),
+              fillOpacity = 1,
+              weight = 1,
+              color = "white") %>% 
+  addLegend(pal = pal_regions,
+            values = ~region,
+            opacity = 1, 
+            title = "Region <br>(in size order)") %>% 
+  frameWidget(height = "400px")
+```
+
+]
+
+
+
+
+
+
+
+
+
+
+

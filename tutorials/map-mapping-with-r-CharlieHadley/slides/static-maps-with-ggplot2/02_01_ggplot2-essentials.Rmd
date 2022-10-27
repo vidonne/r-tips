@@ -1,0 +1,354 @@
+---
+title: "{ggplot2} Essentials"
+error: false
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    css: ["style.css", "default"]
+    lib_dir: libs
+    df_print: paged
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: 16:9
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r child = "setup.Rmd"}
+```
+
+```{r, eval=TRUE, include=FALSE}
+library(tidyverse)
+library(ggspatial)
+library(fontawesome)
+library(here)
+library(palmerpenguins)
+library(ggspatial)
+library(maps)
+library(fivethirtyeight)
+library(sf)
+library(rnaturalearthdata)
+library(patchwork)
+colours_ggplot2_components <- as.list(set_names(ggpomological:::pomological_palette[1:5], c("aesthetics", "geoms", "scales", "guides", "themes")))
+```
+
+
+class: center, middle, dk-section-title
+background-image:url("images/pexels-photo-5282585.jpeg")
+background-size: cover
+
+# {ggplot2} essentials
+
+---
+
+### What is `{ggplot2}`?
+
+`{ggplot2}` implements a *grammar of graphics* for building charts.
+
+We can use it to consistently build **any**<sup>1</sup> chart.
+
+```{r, eval=TRUE, echo=FALSE, fig.height=3, fig.width=10, message=FALSE, warning=FALSE, dpi=150}
+gg_iris_scatter <- iris %>%
+  ggplot(aes(x = Petal.Length,
+             y = Sepal.Length)) +
+  geom_point() +
+  labs(x = "", y = "") +
+  theme_bw()
+
+gg_economics_line <- economics_long %>%
+  ggplot() +
+  geom_line(aes(date, value01, colour = variable), show.legend = FALSE) +
+  labs(x = "", y = "") +
+  theme_bw()
+
+
+gg_marital_bar <- gss_cat %>%
+  count(marital) %>%
+  mutate(
+    marital = fct_anon(marital, prefix = "type "),
+    marital = fct_reorder(marital, n)) %>%
+  ggplot() +
+  geom_col(aes(x = marital, y = n)) +
+  coord_flip() +
+  labs(x = "", y = "") +
+  theme_bw()
+
+mtcars_long <- mtcars %>%
+  as_tibble() %>% 
+  pivot_longer(everything())
+
+
+gg_quakes_histogram <- ggplot(quakes) +
+  geom_histogram(aes(x = mag)) +
+  labs(x = "", y = "") +
+  theme_bw()
+
+gg_bechden_violin <- bechdel %>%
+  filter(domgross_2013 < 1e9) %>%
+  # filter(domgross_2013 >= 1e6) %>%
+  ggplot() +
+  geom_violin(aes(x = clean_test,
+                  y = domgross_2013),
+              fill = "orange") +
+  coord_flip() +
+  labs(x = "", y = "") +
+  theme_bw()
+
+gg_diamonds_histogram <- ggplot(mtcars_long, aes(value)) + facet_wrap(~name, scales = 'free_x') +
+  geom_histogram(binwidth = function(x) 2 * IQR(x) / (length(x)^(1/3))) +
+  labs(x = "", y = "") +
+  theme_bw()
+
+# ggsave("gg-saves/gg-iris-scatter.png",
+#        gg_iris_scatter)
+# ggsave("gg-saves/gg-economics-line.png",
+#        gg_economics_line)
+
+bump_data <- tribble(
+  ~response, ~year, ~within_year_rank,
+  "Yes", 2019, 1,
+  "Maybe", 2019, 2,
+  "No", 2019, 3,
+  "Unsure", 2019, 4,
+  "Unsure", 2016, 1,
+  "No", 2016, 2,
+  "Maybe", 2016, 3,
+  "Yes", 2016, 4,
+  "Yes", 2017, 3,
+  "No", 2017, 2,
+  "Unsure", 2017, 1,
+  "Maybe", 2017, 4,
+  "No", 2018, 1,
+  "Yes", 2018, 2,
+  "Maybe", 2018, 4,
+  "Unsure", 2018, 3
+)
+gg_bump <- bump_data %>%
+  ggplot(aes(x = year, y = within_year_rank, group = response)) +
+    geom_line(aes(color = response), size = 2) +
+    geom_point(aes(color = response), size = 4) +
+    geom_point(color = "#FFFFFF", size = 1) +
+    scale_y_reverse(breaks = 1:nrow(bump_data)) +
+    scale_x_continuous(breaks = unique(bump_data$year), minor_breaks = unique(bump_data$year)) +
+  coord_cartesian(ylim = c(1, length(unique(bump_data$response)))) +
+  theme_bw() +
+  theme(axis.ticks.y = element_blank(),
+        axis.text.y = element_blank()) +
+  labs(x = "", y = "") 
+
+
+gg_iris_scatter + gg_economics_line + gg_marital_bar + plot_layout(ncol = 3) + 
+  gg_quakes_histogram + gg_bechden_violin + gg_bump
+
+```
+
+
+.footnote[
+[1] - Dual y-axis charts must be transformations of one another ([for good reasons](https://stackoverflow.com/a/3101876/1659890))
+]
+
+---
+
+# Building blocks of a {ggplot2} chart
+
+- `r fa(name = "ruler-combined", fill = colours_ggplot2_components$aesthetics)` <span style='color:`r colours_ggplot2_components$aesthetics`'>Aesthetics</span>
+
+- `r fa(name = "shapes", fill = colours_ggplot2_components$geoms)` <span style='color:`r colours_ggplot2_components$geoms`'>Geoms</span>
+
+- `r fa(name = "balance-scale", fill = colours_ggplot2_components$scales)` <span style='color:`r colours_ggplot2_components$geoms`'>Scales</span>
+
+- `r fa(name = "tags", fill = colours_ggplot2_components$guides)` <span style='color:`r colours_ggplot2_components$geoms`'>Guides</span>
+
+- `r fa(name = "paint-roller", fill = colours_ggplot2_components$themes)` <span style='color:`r colours_ggplot2_components$themes`'>Theme</span>
+
+---
+
+# Building blocks of a {ggplot2} chart
+
+- `r fa(name = "ruler-combined", fill = colours_ggplot2_components$aesthetics)` <span style='color:`r colours_ggplot2_components$aesthetics`'>Aesthetics</span>: these create mappings between columns in datasets and the coordinate system of the chart.
+
+---
+
+# Building blocks of a {ggplot2} chart
+
+- `r fa(name = "ruler-combined", fill = colours_ggplot2_components$aesthetics)` <span style='color:`r colours_ggplot2_components$aesthetics`'>Aesthetics</span>
+
+- `r fa(name = "shapes", fill = colours_ggplot2_components$geoms)` <span style='color:`r colours_ggplot2_components$geoms`'>Geoms</span>: these use the aesthetics to draw layers onto our charts
+
+---
+
+# Geoms & categorical variables
+
+In R we use `factors` to control the order in which geoms are drawn (and appear in legends)
+
+.pull-left[
+
+- Default (alphabetical) ordering
+
+```{r, eval=TRUE,echo=FALSE, dpi=150, out.width='100%', fig.asp=1/2}
+ggplot2::msleep %>% 
+  count(vore) %>% 
+  ggplot(aes(x = n,
+             y = vore)) +
+  geom_col() +
+  theme_gray(18)
+```
+]
+
+.pull-right[
+
+- Reordered by another column
+
+```{r, eval=TRUE,echo=FALSE, dpi=150, out.width='100%', fig.asp=1/2}
+ggplot2::msleep %>% 
+  count(vore) %>% 
+  mutate(vore = fct_reorder(vore, n)) %>% 
+  ggplot(aes(x = n,
+             y = vore)) +
+  geom_col() +
+  theme_gray(18)
+```
+]
+
+---
+
+# Building blocks of a {ggplot2} chart
+
+- `r fa(name = "ruler-combined", fill = colours_ggplot2_components$aesthetics)` <span style='color:`r colours_ggplot2_components$aesthetics`'>Aesthetics</span>
+
+- `r fa(name = "shapes", fill = colours_ggplot2_components$geoms)` <span style='color:`r colours_ggplot2_components$geoms`'>Geoms</span>
+
+- `r fa(name = "balance-scale", fill = colours_ggplot2_components$scales)` <span style='color:`r colours_ggplot2_components$geoms`'>Scales</span>: these affect how the aesthetics appear in the chart
+
+---
+
+# Building blocks of a {ggplot2} chart
+
+- `r fa(name = "ruler-combined", fill = colours_ggplot2_components$aesthetics)` <span style='color:`r colours_ggplot2_components$aesthetics`'>Aesthetics</span>
+
+- `r fa(name = "shapes", fill = colours_ggplot2_components$geoms)` <span style='color:`r colours_ggplot2_components$geoms`'>Geoms</span>
+
+- `r fa(name = "balance-scale", fill = colours_ggplot2_components$scales)` <span style='color:`r colours_ggplot2_components$geoms`'>Scales</span>
+
+- `r fa(name = "tags", fill = colours_ggplot2_components$guides)` <span style='color:`r colours_ggplot2_components$geoms`'>Guides</span>: these affect how the guides (or legends) are constructed from the aesthetics and scales.
+
+---
+
+# Guides and maps
+
+<center>
+```{r, eval=TRUE, echo=FALSE, dpi=150, out.width='900px', fig.asp=1/2}
+age_finished_education <- read_csv(here("data", "age-when-completed-education.csv"))
+
+london_sf <- read_sf(here("data", "london_boroughs"))
+
+london_education_sf <- london_sf %>%
+  left_join(age_finished_education,
+            by = c("lad11nm" = "area")
+  )
+
+london_education_sf %>% 
+  filter(age_group == "16 or under") %>% 
+  ggplot() +
+  geom_sf(aes(fill = value,
+              shape = "No data\navailable"),
+          size = 0.1,
+          color = "white") +
+  scale_fill_viridis_c(na.value = "pink",
+                       labels = scales::number_format(big.mark = ","), name = "School leavers\nper borough") +
+  guides(shape = guide_legend(override.aes = list(fill = "pink"), 
+                              title = NULL, order = 2),
+         fill = guide_colorbar(order = 1,
+                               title.vjust = 4)) +
+  labs(title = "Where do Londoners who left school at 16 (or under) live?") +
+  theme_void()
+```
+</center>
+
+
+---
+
+# Building blocks of a {ggplot2} chart
+
+- `r fa(name = "ruler-combined", fill = colours_ggplot2_components$aesthetics)` <span style='color:`r colours_ggplot2_components$aesthetics`'>Aesthetics</span>
+
+- `r fa(name = "shapes", fill = colours_ggplot2_components$geoms)` <span style='color:`r colours_ggplot2_components$geoms`'>Geoms</span>
+
+- `r fa(name = "balance-scale", fill = colours_ggplot2_components$scales)` <span style='color:`r colours_ggplot2_components$scales`'>Scales</span>
+
+- `r fa(name = "tags", fill = colours_ggplot2_components$guides)` <span style='color:`r colours_ggplot2_components$guides`'>Guides</span>
+
+- `r fa(name = "paint-roller", fill = colours_ggplot2_components$themes)` <span style='color:`r colours_ggplot2_components$themes`'>Theme</span>: this affects the look and feel of the chart.
+
+---
+
+# {ggspatial}
+
+The `{ggspatial}` package extends `{ggplot2}`'s mapping capabilities in three big ways:
+
+- It allows us to add map tiles to maps
+
+--
+
+<center>
+```{r, echo=FALSE, eval=TRUE, dpi=150, out.width='65%', fig.asp=4/8}
+germany_sf <- countries50 %>% 
+  st_as_sf() %>% 
+  filter(name == "Germany")
+
+germany_cities <- world.cities %>% 
+  filter(country.etc == "Germany") %>% 
+  slice_max(pop, n = 5) %>% 
+  st_as_sf(coords = c("long", "lat"),
+           crs = 4326)
+
+gg_germany_without_tiles <- ggplot() +
+  # annotation_map_tile(zoomin = 0) +
+  geom_sf(data = germany_sf,
+          fill = NA) +
+  geom_sf(data = germany_cities) +
+  ggthemes::theme_map()
+
+gg_germany_with_tiles <- ggplot() +
+  annotation_map_tile(zoomin = 0) +
+  geom_sf(data = germany_sf,
+          fill = NA) +
+  geom_sf(data = germany_cities) +
+  ggthemes::theme_map()
+
+gg_germany_without_tiles + gg_germany_with_tiles
+```
+</center>
+
+---
+
+# {ggspatial}
+
+The `{ggspatial}` package extends `{ggplot2}`'s mapping capabilities in three big ways:
+
+- It allows us to add map tiles to maps
+
+- It allows us to add `{raster}` and `{terra}` datasets to `{ggplot2}` charts
+
+--
+
+- It allows us to add map-specific chart furniture to `{ggplot2}` charts
+
+<center>
+```{r, echo=FALSE, eval=TRUE, dpi=150, out.width='250px', fig.asp=3/4}
+ggplot() +
+  geom_sf(data = germany_sf,
+          fill = NA) +
+  geom_sf(data = germany_cities) +
+  annotation_scale(location = "bl",
+                   height = unit(
+                     0.15, "cm"),
+                   width_hint = 0.8,
+                   pad_y = unit(0.1, "cm"),
+                   text_cex = 1) +
+  annotation_north_arrow(location = "tl") +
+  ggthemes::theme_map()
+```
+</center>

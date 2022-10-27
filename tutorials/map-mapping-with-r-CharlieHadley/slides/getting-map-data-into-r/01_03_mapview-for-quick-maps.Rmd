@@ -1,0 +1,78 @@
+---
+title: "{mapview} for quick maps"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    css: ["style.css", "default"]
+    lib_dir: libs
+    df_print: paged
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: 16:9
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r child = "setup.Rmd"}
+library("mapview")
+```
+
+class: center, middle, dk-section-title
+background-image:url("images/mapview-logo.gif")
+background-size: 400px
+
+# {mapview} for quick maps
+
+???
+
+
+---
+
+## {mapview} is built for quick dataviz
+
+With {ggplot2} we can build print quality static maps.
+
+With {leaflet} we can build rich, interactive maps.
+
+With {mapview} we can check if our data makes sense.
+
+???
+
+
+
+---
+
+## (RStudio Coding Slide)
+
+???
+
+---
+
+## mapview features
+
+.pull-left[
+- Designed to be fast
+
+- Works with most common geospatial data formats
+
+  - `{sp}`
+  - `{sf}`
+  - `{raster}`
+  - `{stars}`
+  
+- Can be further customised, see package website for more details: <br>[r-spatial.github.io/mapview](http://r-spatial.github.io/mapview)
+]
+
+.pull-right[
+```{r, eval=TRUE, echo=FALSE, out.width="450px", out.height="450px"}
+library("mapview")
+mapview(franconia, color = "cyan", col.regions = "white", lwd = 3)
+```
+
+]
+
+???
+
+

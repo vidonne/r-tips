@@ -1,0 +1,94 @@
+---
+title: "Visualise raster data with ggplot2"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    css: ["style.css", "default"]
+    lib_dir: libs
+    df_print: paged
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: 16:9
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r child = "setup.Rmd"}
+```
+
+```{r, include=FALSE, eval=TRUE}
+library("tidyverse")
+library("sf")
+library("rnaturalearthdata")
+library("maps")
+library("here")
+library("ggspatial")
+library("janitor")
+library("readxl")
+library("tidygeocoder")
+library("ggspatial")
+library("leaflet")
+library("ggrepel")
+library("scales")
+library("fontawesome")
+library("rmapshaper")
+library("tigris")
+library(tidycensus)
+colours_ggplot2_components <- as.list(set_names(ggpomological:::pomological_palette[1:5], c("aesthetics", "geoms", "scales", "guides", "themes")))
+```
+
+class: center, middle, dk-section-title
+background-image:url("https://images.pexels.com/photos/23781/pexels-photo.jpg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260")
+background-size: cover
+
+# Visualise raster data with ggplot2
+
+---
+
+# {ggplot2} and raster GIS
+
+The `{ggplot2}` package on its own doesn't know how to visualise raster GIS datasets.
+
+- The `{ggspatial}` package can visualise both `{raster}` and `{terra}` layers
+
+- The `{stars}` package contains `geom_star()` that can be slotted into a "normal" `{ggplot2}` chart.
+
+---
+
+# {ggspatial}
+
+We use the `layer_spatial()` function to add `{raster}` and `{terra}` layers to a `{ggplot2}` chart.
+
+The "variable" used to fill the raster layer is called "band1" and is used in `aes()` as follows:
+
+```{r}
+ggplot() +
+  layer_spatial(raster_data,
+                aes(fill = stat(as.character(band1))))
+```
+
+---
+
+# {stars}
+
+We use `geom_stars()` like a normal geom.
+
+The "variable" used inside aes() depends on the actual stars object itself.
+
+
+```{r}
+# stars object with 3 dimensions and 1 attribute
+# attribute(s):
+#              Min. 1st Qu. Median     Mean 3rd Qu. Max.
+# L7_ETMS.tif     1      54     69 68.91242      86  255
+# dimension(s):
+#      from  to  offset delta                       refsys point values x/y
+# x       1 349  288776  28.5 UTM Zone 25, Southern Hem... FALSE   NULL [x]
+# y       1 352 9120761 -28.5 UTM Zone 25, Southern Hem... FALSE   NULL [y]
+# band    1   6      NA    NA                           NA    NA   NUL
+```
+
+
+

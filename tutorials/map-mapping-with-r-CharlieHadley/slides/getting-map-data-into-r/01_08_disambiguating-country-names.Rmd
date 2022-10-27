@@ -1,0 +1,200 @@
+---
+title: "Disambiguating country names with {countrycode}"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    css: ["style.css", "default"]
+    lib_dir: libs
+    df_print: paged
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: 16:9
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r child = "setup.Rmd"}
+```
+
+```{r, include=FALSE, eval=TRUE}
+library("sf")
+library("tidyverse")
+library("rnaturalearthdata")
+library("mapview")
+library("patchwork")
+library("leaflet")
+library("leaflet.extras")
+library("readxl")
+library("janitor")
+library("stars")
+library("emo")
+library("DT")
+library("countrycode")
+library("gapminder")
+```
+
+class: center, middle, dk-section-title
+background-image:url("images/translations.jpg")
+background-size: 100%
+
+# Disambiguating country names with {countrycode}
+
+???
+
+
+
+---
+
+## Why are country names complicated?
+
+There are 3 reasons that country names might vary between datasets:
+
+- Abbreviations
+
+  - UK/United Kingdom, US/USA/United States, N. Cyprus/Northern Cyprus
+
+--
+
+- Alternative (not disputed) names, i.e. formal vs informal
+
+  - Netherlands/Holland, Kingdom of Bahrain/Bahrain, People's Republic of China/China
+
+--
+
+- Disputed territories
+
+???
+
+---
+
+### Country codes are better than country names
+
+The only true way to disambiguate is to use country codes.
+
+```{r, eval=TRUE, echo=FALSE}
+set.seed(5)
+countrycode::codelist %>%
+  select(country.name.en, iso3c, iso3n, eurostat, ioc) %>%
+  filter(complete.cases(.)) %>%
+  sample_n(5) %>%
+  datatable(options = list(dom = "T",
+                           columnDefs = list(
+                             list(className = 'dt-center', targets = 1:4)
+                           )),
+            colnames = c("ISO-3 character",
+                         "ISO-3 number",
+                         "Eurostat",
+                         "International Olympic Committee"
+                         ),
+            rownames = FALSE) %>%
+  formatStyle('iso3c',
+              backgroundColor = 'yellow')
+```
+
+
+---
+
+class: my-turn
+
+## My Turn
+
+I'm going to use `{countrycode}` to disambiguate country names in a toy dataset and then use that to create a choropleth.
+
+???
+
+---
+
+
+## (RStudio Coding Slide)
+  
+---
+
+class: inverse
+
+## Your Turn
+
+Combine the `rnaturalearthdata::countries110` dataset with `gapminder_2007` and create a choropleth comparing country populations.
+
+.pull-left[
+- Use `countryname()` to add a column to `gapminder_2007` that contains the ISO3C country codes
+
+- Join together the `countries110` and `gapminder_2007` dataset using your new column
+
+- Use `mapview()` to visualise the `lifeExp` column
+]
+
+.pull-right[
+```{r, eval=TRUE, echo=FALSE}
+gapminder_2007 <- gapminder %>% 
+  filter(year == 2007) %>%
+  mutate(iso3c = countryname(country, "iso3c"))
+
+countries_sf <- countries110 %>%
+  st_as_sf()
+
+countries_sf %>%
+  filter(!name == "Antarctica") %>%
+  left_join(gapminder_2007,
+            by = c("iso_a3" = "iso3c")) %>%
+  mapview(zcol = "lifeExp")
+```
+
+]
+
+???
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

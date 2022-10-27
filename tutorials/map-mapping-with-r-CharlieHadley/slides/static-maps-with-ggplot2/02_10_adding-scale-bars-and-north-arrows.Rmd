@@ -1,0 +1,56 @@
+---
+title: "Adding scale bars and north arrows"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    css: ["style.css", "default"]
+    lib_dir: libs
+    df_print: paged
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: 16:9
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r child = "setup.Rmd"}
+```
+
+```{r, include=FALSE, eval=TRUE}
+library("tidyverse")
+library("sf")
+library("rnaturalearthdata")
+library("maps")
+library("here")
+library("ggspatial")
+library("janitor")
+library("readxl")
+library("tidygeocoder")
+library("ggspatial")
+library("leaflet")
+library("ggrepel")
+library("scales")
+library("fontawesome")
+library("rmapshaper")
+library("tigris")
+library(tidycensus)
+colours_ggplot2_components <- as.list(set_names(ggpomological:::pomological_palette[1:5], c("aesthetics", "geoms", "scales", "guides", "themes")))
+```
+
+class: center, middle, dk-section-title
+background-image:url("https://images.pexels.com/photos/552600/pexels-photo-552600.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260")
+background-size: cover
+
+# Adding scale bars and north arrows
+
+---
+
+## {ggspatial} for scale bars & north arrows
+
+The `{ggspatial}` package allows you to add scale bars and north arrows to **all** of the maps we've created in this section.
+
+--
+
+In `02_10` I've included scripts for adding these to most of the "your-turn" exercises in this section.

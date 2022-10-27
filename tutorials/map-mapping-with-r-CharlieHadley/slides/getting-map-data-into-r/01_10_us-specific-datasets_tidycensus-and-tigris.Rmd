@@ -1,0 +1,308 @@
+---
+title: "US data: {tidycensus} and {tigris} packages"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    css: ["style.css", "default"]
+    lib_dir: libs
+    df_print: paged
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: 16:9
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r child = "setup.Rmd"}
+```
+
+```{r, include=FALSE, eval=TRUE}
+library("sf")
+library("tidyverse")
+library("mapview")
+library("patchwork")
+library("leaflet")
+library("leaflet.extras")
+library("readxl")
+library("janitor")
+library("stars")
+library("emo")
+library("tigris")
+library("tidycensus")
+```
+
+class: center, middle, dk-section-title
+background-image:url("images/us-maps.jpg")
+background-size: 100%
+
+# US data: {tidycensus} and {tigris} packages
+
+???
+
+
+---
+
+## TIGER & {tigris}
+
+.pull-left[
+
+The US Census Bureau is responsible for maintaining shapefiles and other geospatial datasets for contiguous US and its territories.
+
+The collated dataset is called TIGER (Topologically Integrated Geographic Encoding and Referencing).
+
+The `{tigris}` package provides programmatic access to **current and historic** components of TIGER.
+
+]
+
+.pull-right[
+<br>
+<center>
+<img src='images/tigris_sticker.png' width="250px"/>
+</center>
+
+]
+
+???
+
+
+---
+
+## {tigris}
+
+.pull-left[
+
+The `{tigris}` doesn't *contain* any datasets, they must be **downloaded** after the package is loaded.
+
+Think carefully about how detailed a shapefile you require - for many functions the default `{sf}` objects are ***large***.
+
+]
+
+.pull-right[
+<br>
+<center>
+<img src='images/tigris_sticker.png' width="250px"/>
+</center>
+
+]
+
+???
+
+
+
+---
+
+## (RStudio Coding Slide)
+
+???
+
+
+  
+
+---
+
+### tigris::________________(cb = TRUE)
+
+It's a common mistake to forget to set `cb = TRUE`
+
+.pull-left[
+```{r eval=FALSE, message=FALSE, warning=FALSE, out.height='250px'}
+states(resolution = "500k") %>%
+  filter(NAME == "Washington") %>%
+  mapview()
+```
+
+<img src='images/washington-cb-false_without-fjords.png'/>
+]
+
+.pull-right[
+```{r, eval=FALSE, out.height='250px'}
+states(resolution = "500k", cb = TRUE) %>%
+  filter(NAME == "Washington") %>%
+  mapview()
+```
+<img src='images/washington-cb-true_with-fjords.png'/>
+]
+
+
+???
+
+
+---
+
+## (RStudio Coding Slide)
+
+???
+
+
+---
+
+## {tidycensus}
+
+{tidycensus} provides programmatic access to two data sources:
+
+.pull-left[
+The [Decennial US Census](https://www.census.gov/programs-surveys/decennial-census/data.html) which currently includes data for 1990, 2000 and 2010.
+
+```{r}
+get_decennial(geography = "county",
+              variables = "P005004", 
+              state = "VT")
+```
+]
+
+--
+
+.pull-right[
+
+The [5-year American Community Survey](https://www.census.gov/programs-surveys/acs) (ACS) which currently includes data for 2009 through 2018.
+
+```{r}
+get_acs(geography = "county", 
+        variables = "B19013_001", 
+        state = "VT")
+```
+
+]
+
+???
+
+
+
+---
+
+##  {tidycensus} API
+
+Before we can use the `{tidycensus}` package we must register for a **free** API key from the census bureau by following this workflow:
+
+--
+
+1\. Obtain a key from the signup page: [api.census.gov/data/key_signup.html](http://api.census.gov/data/key_signup.html)
+
+--
+
+2\. Check your email and click on the **activate your key** link
+
+> You've attempted to validate an unknown key. If it has been more than 48 hours since you submitted your request for this API key then the request has been removed from the system. Please request a new key and activate it within 48 hours.
+
+--
+
+3\. Add your Census API key to your `.Renviron` using `census_api_key()` 
+
+```{r}
+census_api_key("your-key", install = TRUE)
+```
+
+
+???
+
+---
+
+## Searching for census variables
+
+`{tidycensus}` uses **variable codes** to access data from the API.
+
+> Use `load_variable()` to find the variable code for the data you're interested in.
+
+--
+
+The process varies for the Census and ACS datasets:
+
+.pull-left[
+
+Use `dataset = "sf1"` for **Decennial Census** data.
+
+```{r}
+vars_census_2010 <- 
+  load_variables(2010,
+                 dataset = "sf1")
+```
+
+
+]
+
+.pull-right[
+
+Use `dataset = "acs5"` for **ACS** data.
+
+```{r}
+vars_acs_2010 <- 
+  load_variables(2018,
+                 dataset = "acs5")
+```
+
+]
+
+
+???
+
+---
+
+## (RStudio Coding Slide)
+
+
+
+---
+
+class: my-turn
+
+## My Turn
+
+.pull-left[
+
+I'm going to create a choropleth visualising the % of households that are rented in each state.
+
+]
+
+.pull-right[
+
+```{r eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE, out.height="400px"}
+
+states_sf <- states(year = 2010, cb = TRUE)
+
+housing_ownership <- get_decennial(geography = "state",
+              variables = c("H001001", "H004004", "H004002"),
+              year = 2010)
+
+housing_ownership <- housing_ownership %>% 
+  pivot_wider(values_from = value,
+              names_from = variable)
+
+housing_ownership <- housing_ownership %>% 
+  mutate(H004004 = 100 * H004004 / H001001) %>% 
+  rename(rental_perc = H004004)
+
+states_sf %>% 
+  select(STATE) %>% 
+  left_join(housing_ownership,
+            by = c("STATE" = "GEOID")) %>% 
+  mapview(zcol = "rental_perc")
+```
+
+]
+
+---
+
+## (RStudio Coding Slide)
+
+???
+
+
+---
+
+class: inverse
+
+### Your Turn
+
+Produce the same choropleth as I did but obtain data from the 2015 American Community Survey (ACS) dataset.
+
+1. Use `load_variables()` to find the variables in the 2015 American Community Survey.
+
+1. Use `get_acs()` to extract these two variables.
+
+1. Use `pivot_wider()` to prepare the data for joining with the US states shapefiles from `{tigris}`.
+
+1. Join the Census and shapefiles datasets with `left_join()` and visualise with `mapview()`
+
+

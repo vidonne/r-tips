@@ -1,0 +1,84 @@
+---
+output: html
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+```
+
+
+## Figure layout, ncol
+
+```{r}
+#| echo: fenced
+#| layout-ncol: 2
+#| fig-cap: 
+#|   - "Speed and Stopping Distances of Cars"
+#|   - "Engine displacement and fuel efficiency in Cars"
+
+cars %>% 
+  ggplot(aes(x = speed, y = dist)) +
+  geom_point()
+
+mtcars %>% 
+  ggplot(aes(x = disp, y = mpg)) +
+  geom_point()
+```
+
+
+## Subcaptions:
+
+```{r}
+#| echo: fenced
+#| label: fig-charts
+#| fig-cap: Charts
+#| fig-subcap: 
+#|   - "Cars"
+#|   - "mtcars"
+#| layout-ncol: 2
+
+cars %>% 
+  ggplot(aes(x = speed, y = dist)) +
+  geom_point()
+
+mtcars %>% 
+  ggplot(aes(x = disp, y = mpg)) +
+  geom_point()
+```
+
+## Figure layout, custom
+
+```{r}
+#| echo: fenced
+#| layout: [[45,-10, 45], [50, 50]]
+#| fig-height: 5
+#| fig-align: center
+#| message: false
+#| warning: false
+#| dpi: 300
+
+cars %>% 
+  ggplot(aes(x = speed, y = dist)) +
+  geom_smooth() +
+  theme(text = element_text(size = 20))
+
+cars %>% 
+  ggplot(aes(x = speed, y = dist)) +
+  geom_point()+
+  theme(text = element_text(size = 20))
+
+mtcars %>% 
+  ggplot(aes(x = disp, y = mpg)) +
+  geom_point()+
+  theme(text = element_text(size = 20))
+
+mtcars %>% 
+  ggplot(aes(x = cyl, y = mpg, group = cyl, color = factor(cyl))) +
+  geom_boxplot() +
+  geom_jitter() +
+  theme(legend.position = "none")+
+  theme(text = element_text(size = 20))
+
+```
+

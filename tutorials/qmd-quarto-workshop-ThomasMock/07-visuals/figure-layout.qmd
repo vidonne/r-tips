@@ -1,0 +1,94 @@
+---
+format: html
+---
+
+```{r}
+library(ggplot2)
+```
+
+## Figures
+
+Basic markdown syntax:
+
+```
+![Boston Terrier](boston-terrier.png)
+```
+
+![Boston Terrier](boston-terrier.png)
+
+## Fragments
+
+:::: columns
+
+::: {.column width="50%"}
+
+```
+![Boston terrier](boston-terrier.png){fig-align="left"}
+```
+![](boston-terrier.png)
+:::
+
+::: {.column width="50%"}
+
+```
+![](boston-terrier.png){fig-align="right" fig-alt="A photo a Boston Terrier."}
+```
+
+![](boston-terrier.png){fig-align="right" fig-alt="A photo a Boston Terrier."}
+
+:::
+
+::::
+
+## Subfigures
+
+```
+::: {#fig-bostons layout-ncol=2}
+
+![Excited](boston-terrier.png){#fig-boston width="250px"}
+
+![Sleeping](boston-sleep.png){#fig-sleep width="250px"}
+
+Two states of Howard
+
+:::
+```
+
+## Subfigures
+
+::: {#fig-bostons layout-ncol=2}
+
+![Excited](boston-terrier.png){#fig-boston width="250px"}
+
+![Sleeping](boston-sleep.png){#fig-sleep width="250px"}
+
+Two states of Howard
+
+:::
+
+## Subfigures
+
+<iframe src="sub-figure.html" height="800px" width="1200px"></iframe>
+
+## Custom grid
+
+::: {.grid}
+
+::: {.g-col-6}
+This column takes 1/2 of the page
+```{r}
+ggplot(mtcars, aes(x = cyl, y = disp)) +
+  geom_boxplot()
+```
+:::
+
+
+::: {.g-col-6}
+This column takes 1/2 of the page
+```{r}
+head(mtcars, 5)[1:4] |> knitr::kable()
+```
+
+:::
+
+:::

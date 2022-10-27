@@ -1,0 +1,134 @@
+---
+title: "Highlight a region in a country with {leaflet}"
+output:
+  xaringan::moon_reader:
+    css: ["style.css", "default"]
+    lib_dir: libs
+    df_print: paged
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: 16:9
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r child = "setup.Rmd"}
+```
+
+```{r, include=FALSE, eval=TRUE}
+library(sf)
+library(maps)
+library(here)
+library(leaflet)
+library(rmapshaper)
+library(tigris)
+library(janitor)
+library(leaflet.extras)
+library(widgetframe)
+library(tidyverse)
+options(htmltools.preserve.raw = FALSE)
+
+# uk_addresses <- read_excel(here("slides", "static-maps-with-ggplot2", "data", "street-addresses.xlsx"),
+#                            sheet = "UK Addresses") %>% 
+#   clean_names()
+# 
+# uk_addresses <- uk_addresses %>% 
+#   mutate(across(business_name:country, ~str_replace_na(., ""))) %>% 
+#   mutate(full_street_address = paste(business_name, street, sep = ", "))
+# 
+# uk_addresses <- uk_addresses %>% 
+#   geocode(street = full_street_address,
+#           city = city,
+#           postalcode = post_code,
+#           country = country,
+#           method = "iq")
+# 
+# uk_addresses_sf <- uk_addresses %>% 
+#   st_as_sf(coords = c("long", "lat"), crs = 4326)
+# 
+# uk_addresses_sf %>% 
+#   saveRDS(here("slides", "static-maps-with-ggplot2", "data", "street-addresses.rds"))
+colours_ggplot2_components <- as.list(set_names(ggpomological:::pomological_palette[1:5], c("aesthetics", "geoms", "scales", "guides", "themes")))
+
+us_states <- states(resolution = "500k") %>% 
+  clean_names() %>% 
+  mutate(statefp = as.numeric(statefp))
+
+us_contiguous <- us_states %>% 
+  filter(statefp < 60,
+         !statefp %in% c(2, 15)) %>% 
+  ms_simplify()
+
+texas_counties <- tigris::counties(state = "TX") %>% 
+  ms_simplify()
+
+texas_state <- us_contiguous %>% 
+  filter(name == "Texas")
+
+texas_border_states <- us_contiguous[st_touches(texas_state, us_contiguous, sparse = FALSE), ]
+```
+
+class: center, middle, dk-section-title
+background-image:url("https://images.pexels.com/photos/7821576/pexels-photo-7821576.jpeg?cs=srgb&dl=pexels-rodnae-productions-7821576.jpg&fm=jpg")
+background-size: cover
+
+# Highlight a region in a country with {leaflet}
+
+---
+
+### Simple highlighting of regions
+
+```{r, eval=TRUE, echo=FALSE, out.width="100%"}
+lf_simple <- leaflet() %>% 
+  addPolygons(data = us_contiguous,
+              fillColor = "lightgrey",
+              color = "white",
+              fillOpacity = 1,
+              opacity = 1,
+              label = ~name,
+              weight = 1) %>% 
+  addPolygons(data = texas_state,
+              fillColor = "cornflowerblue",
+              fillOpacity = 1,
+              label = ~name,
+              color = "black",
+              weight = 1) %>% 
+  setMapWidgetStyle(style = list(background = "bisque"))
+lf_simple %>% 
+  frameWidget()
+```
+
+
+---
+
+### Highlight sub-regions
+
+```{r, eval=TRUE, echo=FALSE, out.width="100%"}
+lf_adv <- leaflet() %>% 
+  addPolygons(data = texas_border_states,
+              fillColor = "lightgrey",
+              fillOpacity = 1,
+              weight = 1,
+              color = "white") %>% 
+  addPolygons(data = texas_counties,
+              fillColor = "cornflowerblue",
+              fillOpacity = 1,
+              weight = 1,
+              label = ~NAME,
+              color = "white") %>% 
+  addPolygons(data = texas_state,
+              fillOpacity = 0,
+              color = "black",
+              opacity = 1,
+              weight = 1,
+              options = pathOptions(clickable = FALSE)) %>% 
+  setMapWidgetStyle(style = list(background = "bisque"))
+
+lf_adv %>% 
+  frameWidget()
+```
+
+
+

@@ -1,0 +1,15 @@
+﻿value,label,category_name,category_code
+0,Water,Water,0
+1,Evergreen Needleleaf Forest,Forest / Wooded,1
+2,Evergreen Broadleaf Forest,Forest / Wooded,1
+3,Deciduous Needlelead Forest,Forest / Wooded,1
+4,Deciduous Broadleaf Forest,Forest / Wooded,1
+5,Mixed Forest,Forest / Wooded,1
+6,Woodland,Forest / Wooded,1
+7,Wooded Grassland,Forest / Wooded,1
+8,Closed Shrubland,Grassland / Shrubland,2
+9,Open Shrubland,Grassland / Shrubland,2
+10,Grassland,Grassland / Shrubland,2
+11,Cropland,Crop,3
+12,Bare ground,Bare ground,4
+13,Urban,Urban,5

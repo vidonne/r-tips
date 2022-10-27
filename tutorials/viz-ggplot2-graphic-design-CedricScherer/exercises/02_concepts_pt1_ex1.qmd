@@ -1,0 +1,77 @@
+---
+title: "Graphic Design with ggplot2"
+subtitle: "Concepts of the {ggplot2} Package Pt. 1"
+author: "Cedric Vidonne"
+format: html
+execute:
+  message: false
+  warning: false
+editor: source
+---
+
+# Exercise 1
+
+-   Explore the TfL bike share data visually:\
+    **create a timeseries of reported bike shares on weekend days**
+    -   Highlight day and night encoded by colors and shapes.
+    -   Connect the points of each period with lines.
+        -   What is the difference between `geom_line()` and `geom_path()`?
+    -   Apply your favorite theme to the plot.
+    -   Add meaningful labels.
+-   Save the plot as a vector graphic with a decent plot size.
+
+## Data import
+
+```{r}
+#| label: preparation
+library(tidyverse)
+
+bikes <- read_csv(
+  "https://raw.githubusercontent.com/z3tt/graphic-design-ggplot2/main/data/london-bikes-custom.csv", 
+  col_types = "Dcfffilllddddc"
+)
+
+bikes$season <- fct_inorder(bikes$season)
+
+bikes
+```
+
+## Timeseries of reported bike shares on weekend days
+
+```{r}
+#| label: plot
+
+g <- ggplot(data = filter(bikes, is_weekend == TRUE),
+       aes(x = date, y = count)) +
+  geom_line(aes(group = day_night),
+            color = "grey80") +
+  geom_point(aes(color = day_night,
+                 shape = lubridate::wday(date, label = TRUE))) 
+
+g +
+  labs(
+    x = "Weekend date",
+    y = "Reported bike shares"
+  ) +
+  theme_minimal(
+    base_size = 16,
+    base_family = "Lato"
+  ) +
+  theme(
+    legend.position = "top",
+    legend.title = element_blank())
+
+ggsave(here::here("exercises", "myplots", "02_concepts_pt1.pdf"),
+       width = 9, height = 5, device = cairo_pdf)
+
+```
+
+Add your comments and more code here.
+
+
+<br><br><br>
+```{r}
+#| label: i-am-done-what-now
+#| echo: false
+knitr::include_graphics("img/exercise-what-now-sd.png")
+```

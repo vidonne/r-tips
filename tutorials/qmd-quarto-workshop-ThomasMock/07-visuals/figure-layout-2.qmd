@@ -1,0 +1,53 @@
+---
+format: html
+---
+
+## Subfigures
+
+```
+::: {#fig-bostons layout-nrow=2}
+
+![Excited](boston-terrier.png){#fig-boston width="250px"}
+
+![Sleeping](boston-sleep.png){#fig-sleep width="250px"}
+
+![Still Excited](boston-terrier.png){#fig-boston width="250px"}
+
+![Still sleeping](boston-sleep.png){#fig-sleep width="250px"}
+
+Two states of Howard, twice
+
+:::
+```
+
+## Subfigures
+
+::: {#fig-bostons layout-nrow=2}
+
+![Excited](boston-terrier.png){#fig-boston width="250px"}
+
+![Sleeping](boston-sleep.png){#fig-sleep width="250px"}
+
+![Still Excited](boston-terrier.png){#fig-boston width="250px"}
+
+![Still sleeping](boston-sleep.png){#fig-sleep width="250px"}
+
+Two states of Howard, twice
+
+:::
+
+## Subfigures
+
+::: {#fig-bostons layout-nrow=2}
+
+![Excited](boston-terrier.png){#fig-boston width="250px"}
+
+![Sleeping](boston-sleep.png){#fig-sleep width="250px"}
+
+![Still Excited](boston-terrier.png){#fig-boston width="250px"}
+
+![Still sleeping](boston-sleep.png){#fig-sleep width="250px"}
+
+Two states of Howard, twice
+
+:::

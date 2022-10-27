@@ -1,0 +1,138 @@
+---
+title: "Visualise raster data with leaflet"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    css: ["style.css", "default"]
+    lib_dir: libs
+    df_print: paged
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: 16:9
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r child = "setup.Rmd"}
+```
+
+```{r, include=FALSE, eval=TRUE}
+library("sf")
+library("rnaturalearthdata")
+library("maps")
+library("here")
+library("ggspatial")
+library("janitor")
+library("readxl")
+library("tidygeocoder")
+library("ggspatial")
+library("leaflet")
+library("ggrepel")
+library("scales")
+library("fontawesome")
+library("rmapshaper")
+library("tigris")
+library(raster)
+library(leaflet)
+library(tidycensus)
+library(tidyverse)
+
+alaska_landuse <- raster(here("slides", "interactive-maps-with-leaflet", "data", "recoded_alaska_landcover.img"))
+
+landuse_types <- read_csv(here("slides", "interactive-maps-with-leaflet", "data", "landuse-codes.csv"))
+
+colors_landuse <- c("0" = "cadetblue3", "1" = "darkolivegreen", "2" = "darkgreen", "4" = "chocolate", "5" = "antiquewhite")
+
+```
+
+class: center, middle, dk-section-title
+background-image:url("https://images.pexels.com/photos/23781/pexels-photo.jpg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260")
+background-size: cover
+
+# Visualise raster data with leaflet
+
+---
+
+# {leaflet} and raster GIS
+
+The {leaflet} package can natively visualise {raster} datasets.
+
+However, you'll need to use the {leafem} package to visualise {stars} datasets.
+
+---
+
+### Categorical legends for raster GIS in {leaflet}
+
+Because raster GIS objects contain numeric values we need to put some coding effort into creating categorical legends.
+
+e.g when we extract values from a raster they are always numeric:
+
+```{r}
+unique(values(alaska_landuse))
+```
+
+```{r, eval=FALSE, echo=FALSE}
+
+labels_landuse <- landuse_types %>% 
+  filter(value %in% unique(values(alaska_landuse))) %>% 
+  select(value, label) %>% 
+  deframe()
+
+# ==== dataviz ====
+
+pal_alaska_landuse <- colorFactor(as.character(colors_landuse), values(alaska_landuse),
+                    na.color = "transparent")
+
+leaflet() %>% 
+  addRasterImage(alaska_landuse,
+                 colors = pal_alaska_landuse) %>% 
+  addLegend(pal = pal_alaska_landuse,
+            values = values(alaska_landuse),
+            labFormat = labelFormat(transform = function(x) {labels_landuse[as.character(x)]}),
+            opacity = 1) %>% 
+  fitBounds(lng1 = -170, lng2 = -139, lat1 = 52, lat2 = 71)
+```
+
+```{r, eval=FALSE,include=FALSE}
+satellite_imagery <- read_stars("data/L7_ETMS.tif")
+
+band_labels <- c(
+  "1" = "Band 1\nVisible Blue\n(450 - 520nm)",
+  "2" = "Band 2\nVisible Green\n(520 - 600nm)",
+  "3" = "Band 3\nVisible Red\n(630 - 690nm)",
+  "4" = "Band 4\nNear-Infrared\n(770nm - 900nm)",
+  "5" = "Band 5\nShort-wave Infrared\n(1,550nm - 1,750nm)",
+  "6" = "Band 6\nThermal\n(10,400nm - 12,500nm)"
+)
+
+# ==== dataviz ====
+
+satellite_imagery %>% 
+  filter(band == 6) %>% 
+  pull()
+
+pal_satellite_imagery <- colorNumeric("viridis", satellite_imagery %>% 
+                                        filter(band == 6) %>% 
+                                        pull())
+
+leaflet() %>%
+  addProviderTiles("OpenStreetMap") %>%
+  addStarsImage(satellite_imagery, 
+                project = TRUE,
+                band = 6,
+                colors = pal_satellite_imagery) %>% 
+  addLegend(pal = pal_satellite_imagery,
+            values = satellite_imagery %>% 
+              filter(band == 6) %>% 
+              pull())
+```
+
+
+
+
+
+
+
+

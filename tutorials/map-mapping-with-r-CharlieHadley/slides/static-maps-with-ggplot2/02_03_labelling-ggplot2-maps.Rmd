@@ -1,0 +1,164 @@
+---
+title: "Labelling {ggplot2} maps"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    css: ["style.css", "default"]
+    lib_dir: libs
+    df_print: paged
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: 16:9
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r child = "setup.Rmd"}
+```
+
+```{r, include=FALSE, eval=TRUE}
+library("raster")
+library("tidyverse")
+library("sf")
+library("lubridate")
+library("patchwork")
+library("fivethirtyeight")
+library("rnaturalearthdata")
+library("maps")
+library("here")
+library("ggspatial")
+library("stars")
+library("ggrepel")
+```
+
+```{r, include=FALSE, eval=TRUE}
+library("tidyverse")
+library("sf")
+library("rnaturalearthdata")
+library("maps")
+library("here")
+library("ggspatial")
+library("janitor")
+library("readxl")
+library("tidygeocoder")
+library("ggspatial")
+library("leaflet")
+library("ggrepel")
+options(htmltools.preserve.raw = FALSE)
+
+# uk_addresses <- read_excel(here("slides", "static-maps-with-ggplot2", "data", "street-addresses.xlsx"),
+#                            sheet = "UK Addresses") %>% 
+#   clean_names()
+# 
+# uk_addresses <- uk_addresses %>% 
+#   mutate(across(business_name:country, ~str_replace_na(., ""))) %>% 
+#   mutate(full_street_address = paste(business_name, street, sep = ", "))
+# 
+# uk_addresses <- uk_addresses %>% 
+#   geocode(street = full_street_address,
+#           city = city,
+#           postalcode = post_code,
+#           country = country,
+#           method = "iq")
+# 
+# uk_addresses_sf <- uk_addresses %>% 
+#   st_as_sf(coords = c("long", "lat"), crs = 4326)
+# 
+# uk_addresses_sf %>% 
+#   saveRDS(here("slides", "static-maps-with-ggplot2", "data", "street-addresses.rds"))
+uk_addresses_sf <- readRDS(here("slides", "static-maps-with-ggplot2", "data", "street-addresses.rds"))
+
+uk_addresses_tib <- uk_addresses_sf %>% 
+  st_drop_geometry() %>% 
+  bind_cols(as_tibble(st_coordinates(uk_addresses_sf))) %>% 
+  rename(x = X,
+         y = Y)
+
+uk_sf <- countries50 %>% 
+  st_as_sf() %>% 
+  filter(name == "United Kingdom")
+```
+
+class: center, middle, dk-section-title
+background-image:url("images/pexels-photo-1111313.jpeg")
+background-size: cover
+
+# Labelling {ggplot2} maps
+
+---
+
+## Labelling {ggplot2} with {ggrepel}
+
+.pull-left[
+<center><img src='images/ggrepel-allison_horst.jpg'/></center>
+]
+
+.pull-right[
+The `{ggrepel}` package makes it easy to label almost all geoms in ggplot2 charts.
+
+]
+
+---
+
+## Labelling {ggplot2} with {ggrepel}
+
+.pull-left[
+<center><img src='images/ggrepel-allison_horst.jpg'/></center>
+]
+
+.pull-right[
+The `{ggrepel}` package makes it easy to label almost all geoms in ggplot2 charts.
+
+It doesn't (**yet**) work with {sf} objects without a bit of manual work.
+]
+
+---
+
+class: my-turn
+
+## My Turn
+
+.pull-left[
+This dataset was used previously to introduce geocoding with the {tidygeocoder} package.
+
+I'm going to use {ggrepel} to label the points.
+]
+
+.pull-right[
+```{r, eval=TRUE, echo=FALSE, out.width='400px', dpi=300}
+gg_shapefiles <- ggplot() +
+  geom_sf(data = uk_sf) +
+  geom_sf(data = uk_addresses_sf) +
+  geom_label_repel(data = uk_addresses_tib %>% 
+                     arrange(y),
+                   aes(label = location_name,
+                       x = x,
+                       y = y),
+                   # nudge_y = c(1, -1),
+                   nudge_x = c(5, 5, -5, 5, -5, 5),
+                   nudge_y = c(-1, 0, 0, 0, 0, -0.5)) +
+  guides(colour = guide_legend(override.aes = list(size = 3))) +
+  theme_void(base_size = 20)
+gg_shapefiles
+```
+]
+
+---
+
+class: inverse
+
+## Your turn
+
+1. Use the `your-turn.R` script to create a geoscatter plot of the 10 largest cities in Germany<sup>1</sup>
+  
+1. Use `geom_label_repel()` to label the cities
+
+.footnote[
+[1] Feel free to swap to a different country!
+]
+
+
+
+

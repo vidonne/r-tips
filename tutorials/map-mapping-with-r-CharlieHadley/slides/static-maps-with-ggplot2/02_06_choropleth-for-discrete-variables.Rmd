@@ -1,0 +1,284 @@
+---
+title: "Choropleth of discrete variables"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    css: ["style.css", "default"]
+    lib_dir: libs
+    df_print: paged
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: 16:9
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r child = "setup.Rmd"}
+```
+
+```{r, include=FALSE, eval=TRUE}
+library("tidyverse")
+library("sf")
+library("rnaturalearthdata")
+library("maps")
+library("here")
+library("ggspatial")
+library("janitor")
+library("readxl")
+library("tidygeocoder")
+library("ggspatial")
+library("leaflet")
+library("ggrepel")
+library("scales")
+library("fontawesome")
+library("rmapshaper")
+library("tigris")
+options(htmltools.preserve.raw = FALSE)
+
+
+colours_ggplot2_components <- as.list(set_names(ggpomological:::pomological_palette[1:5], c("aesthetics", "geoms", "scales", "guides", "themes")))
+
+us_states <- states(resolution = "500k") %>% 
+  clean_names() %>% 
+  mutate(statefp = as.numeric(statefp))
+
+us_contiguous <- us_states %>% 
+  filter(statefp < 60,
+         !statefp %in% c(2, 15)) %>% 
+  ms_simplify()
+```
+
+```{r, eval=TRUE, include=FALSE}
+# ==== Restaurant Data ====
+# Data obtained from https://www.factual.com/blog/factual-analysis-fast-food-chain-popularity/
+
+most_popular_streaming_service <- read_csv("data/most-popular-streaming-service.csv") %>% 
+  clean_names()
+
+us_contiguous <- states() %>% 
+  clean_names() %>% 
+  mutate(statefp = as.numeric(statefp)) %>% 
+  filter(statefp < 60,
+         !statefp %in% c(2, 15)) %>% 
+  ms_simplify()
+
+us_most_popular_streaming_sf <- us_contiguous %>% 
+  left_join(most_popular_streaming_service,
+            by = c("name" = "state"))
+
+colors_services <- list(
+  "Amazon Prime" = "#2A96D9",
+  "ESPN" = "#BE0002",
+  "Hulu" = "#35B12E",
+  "Netflix" = "black"
+)
+```
+
+
+
+class: center, middle, dk-section-title
+background-image:url("https://images.pexels.com/photos/7138817/pexels-photo-7138817.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260")
+background-size: cover
+
+# Choropleth of discrete variables
+
+---
+
+# What is a choropleth?
+
+.pull-left[
+A choropleth is a shaded area map.
+
+Choropleth can communicate two types of variable:
+
+- Discrete (categorical) variables
+
+- Continuous variables
+]
+
+.pull-right[
+
+```{r, eval=TRUE, echo=FALSE, fig.asp=0.6, dpi=150}
+countries110 %>% 
+  st_as_sf() %>% 
+  ggplot() +
+  geom_sf(aes(fill = continent)) +
+  theme_void() +
+  theme(legend.position = "bottom")
+```
+
+]
+
+---
+
+class: my-turn
+
+# My turn
+
+.pull-left[
+I'm going to work on improving this chart in three ways:
+
+- Ordering the legend from most to least popular streaming service
+
+- Picking alternative color palettes
+
+- Specifying custom (manual) color palettes
+
+]
+
+.pull-right[
+```{r, eval=TRUE, echo=FALSE, fig.asp=0.5, dpi=150}
+us_most_popular_streaming_sf %>% 
+  ggplot() +
+  geom_sf(aes(fill = streaming_service)) +
+  labs(title = "Most popular streaming service by state") +
+  theme_void()
+```
+]
+
+---
+
+### <span style='color:`r colours_ggplot2_components$geoms`'>Geom `r fa(name = "shapes", fill = colours_ggplot2_components$geoms)`</span> and <span style='color:`r colours_ggplot2_components$guides`'>Guide `r fa(name = "tags", fill = colours_ggplot2_components$guides)`</span>  order and factors
+
+We use `factors` to control the order of both geoms and guides.
+
+.pull-left[
+
+- Default (alphabetical) ordering
+
+```{r, eval=TRUE,echo=FALSE, dpi=150, out.width='100%', fig.asp=1/2}
+ggplot2::msleep %>% 
+  count(vore) %>% 
+  ggplot(aes(x = n,
+             y = vore,
+             fill = vore)) +
+  geom_col() +
+  theme_gray(18)
+```
+]
+
+.pull-right[
+
+- Reordered by frequency
+
+```{r, eval=TRUE,echo=FALSE, dpi=150, out.width='100%', fig.asp=1/2}
+ggplot2::msleep %>% 
+  count(vore) %>% 
+  mutate(vore = fct_reorder(vore, n)) %>% 
+  ggplot(aes(x = n,
+             y = vore,
+             fill = vore)) +
+  geom_col() +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  theme_gray(18)
+```
+]
+
+---
+
+# `NA` values in factors
+
+`NA` is always placed at the end of a factor's levels. 
+
+The only way to change this is with fct_explicit_na()
+
+.pull-left[
+
+- Default behaviour of a factor with NA values
+
+```{r, eval=TRUE,echo=FALSE, dpi=150, out.width='100%', fig.asp=1/2}
+ggplot2::msleep %>% 
+  count(vore) %>% 
+  mutate(vore = fct_reorder(vore, n)) %>% 
+  ggplot(aes(x = n,
+             y = vore,
+             fill = vore)) +
+  geom_col() +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  theme_gray(18)
+```
+]
+
+.pull-right[
+
+```{r, eval=FALSE}
+data %>% 
+  fct_explicit_na(vore, "Unknown")) %>% 
+  ...
+```
+
+
+```{r, eval=TRUE,echo=FALSE, dpi=150, out.width='100%', fig.asp=1/2}
+ggplot2::msleep %>% 
+  count(vore) %>% 
+  mutate(vore = fct_explicit_na(vore, "Unknown")) %>% 
+  mutate(vore = fct_reorder(vore, n)) %>% 
+  ggplot(aes(x = n,
+             y = vore,
+             fill = vore)) +
+  geom_col() +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  theme_gray(18)
+```
+]
+
+---
+
+class: inverse
+
+## Your turn
+
+.pull-left[
+
+Use the `your-turn.R` script in `02_06` to make this map.
+
+- Use the custom colors.
+
+- Ensure the guide is ordered by size of region.
+
+- Add a title to the guide.
+
+]
+
+.pull-right[
+
+```{r, eval=TRUE,echo=FALSE, dpi=150, out.width='100%', fig.asp=1/2}
+us_contiguous <- us_contiguous %>% 
+  mutate(region = case_when(region == 1 ~ "Northeast",
+                            region == 2 ~ "Midwest",
+                            region == 3 ~ "South",
+                            region == 4 ~ "West"))
+
+order_of_regions <- us_contiguous %>% 
+  count(region, sort = TRUE) %>% 
+  pull(region)
+
+colors_of_regions <- list("Northeast" = "#c03728",
+                          "Midwest" = "#919c4c",
+                          "West" = "#fd8f24",
+                          "South" = "#f5c04a")
+
+colors_of_regions <- colors_of_regions[order_of_regions]
+
+us_contiguous %>% 
+  ggplot() +
+  geom_sf(aes(fill = region)) +
+  scale_fill_manual(values = colors_of_regions,
+                    name = "Regions\n(in size order)") +
+  theme_void(18)
+```
+
+]
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,129 @@
+---
+title: "Starting a map in leaflet"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    css: ["style.css", "default"]
+    lib_dir: libs
+    df_print: paged
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: 16:9
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r child = "setup.Rmd"}
+```
+
+```{r, eval=TRUE, include=FALSE}
+library("tidyverse")
+library("ggspatial")
+library("here")
+library("ggspatial")
+library("maps")
+library("sf")
+library("rnaturalearthdata")
+library(leaflet)
+colours_ggplot2_components <- as.list(set_names(ggpomological:::pomological_palette[1:5], c("aesthetics", "geoms", "scales", "guides", "themes")))
+
+germany_sf <- countries50 %>% 
+  st_as_sf() %>% 
+  filter(name == "Germany")
+
+germany_cities <- world.cities %>% 
+  filter(country.etc == "Germany") %>% 
+  slice_max(pop, n = 5) %>% 
+  st_as_sf(coords = c("long", "lat"),
+           crs = 4326)
+```
+
+
+class: center, middle, dk-section-title
+background-image:url("images/pexels-photo-7431661.jpeg")
+background-size: cover
+
+# Starting a map in leaflet
+
+---
+
+> How much context does your map need?
+
+.pull-left[
+```{r, eval=TRUE, echo=FALSE}
+
+leaflet() %>% 
+  addPolygons(data = germany_sf,
+              weight = 1,
+              color = "black",
+              fillColor = "forestgreen") %>% 
+  addCircleMarkers(data = germany_cities,
+                   fillColor = "black",
+                   fillOpacity = 1,
+                   stroke = FALSE,
+                   popup = ~name)
+
+```
+]
+
+.pull-right[
+```{r, eval=TRUE, echo=FALSE}
+leaflet() %>%
+  addProviderTiles(providers$OpenStreetMap) %>% 
+  addPolygons(
+    data = germany_sf,
+    weight = 1,
+    color = "black",
+    fillColor = "forestgreen"
+  ) %>%
+  addCircleMarkers(
+    data = germany_cities,
+    fillColor = "black",
+    fillOpacity = 1,
+    stroke = FALSE,
+    popup = ~ name
+  )
+```
+
+]
+
+---
+
+# {leaflet} map tiles
+
+`{leaflet}` has a much wider array of map tiles available than `{ggspatial}`.
+
+You can obtain the names of all the map tiles from `leaflet::providers`
+
+[This website](http://leaflet-extras.github.io/leaflet-providers/preview/index.html) allows you to compare the map tiles.
+
+---
+
+# {leaflet} background color
+
+The `{leaflet.extras}` package add lots of additional functionality to `{leaflet}` - including setting a background color.
+
+```{r}
+leaflet_map %>% 
+  setMapWidgetStyle(list(background= "lightblue"))
+```
+---
+
+## Using columns in {leaflet}
+
+In `{ggplot2}` we used `aes()` to create mappings between our data and the chart.
+
+In `{leaflet}` we use `~column_name`
+
+---
+
+
+
+
+
+
+
+
+

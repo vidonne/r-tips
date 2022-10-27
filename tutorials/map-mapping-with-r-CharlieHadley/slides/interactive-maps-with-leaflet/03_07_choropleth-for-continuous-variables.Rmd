@@ -1,0 +1,366 @@
+---
+title: "Choropleth for continuous variables with leaflet"
+output:
+  xaringan::moon_reader:
+    css: ["style.css", "default"]
+    lib_dir: libs
+    df_print: paged
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: 16:9
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r child = "setup.Rmd"}
+```
+
+```{r, include=FALSE, eval=TRUE}
+library("tidyverse")
+library("sf")
+library("rnaturalearthdata")
+library("maps")
+library("here")
+library("ggspatial")
+library("janitor")
+library("readxl")
+library("tidygeocoder")
+library("ggspatial")
+library("leaflet")
+library("ggrepel")
+library("scales")
+library("fontawesome")
+library("rmapshaper")
+library("tigris")
+library(tidycensus)
+library(widgetframe)
+colours_ggplot2_components <- as.list(set_names(ggpomological:::pomological_palette[1:5], c("aesthetics", "geoms", "scales", "guides", "themes")))
+
+us_states <- states() %>% 
+  clean_names() %>% 
+  mutate(statefp = as.numeric(statefp))
+
+south_atlantic_states <- us_states %>% 
+  filter(division == 5) %>% 
+  ms_simplify()
+
+
+prisoners_per_state <- get_decennial(geography = "state",
+              variables = c("state_prison_population" = "PCT020006")) %>% 
+  clean_names() %>% 
+  mutate(state_prison_population = if_else(name == "District of Columbia",
+                         NA_real_,
+                         value))
+
+
+options(htmltools.preserve.raw = FALSE)
+```
+
+```{r, eval=TRUE, include=FALSE}
+london_sf <- read_sf(here("slides", "static-maps-with-ggplot2", "data", "london_boroughs"))
+
+education_data <- read_csv(here("slides", "static-maps-with-ggplot2", "data", "age-when-completed-education.csv"))
+
+london_school_leavers_sf <- london_sf %>% 
+  left_join(education_data,
+            by = c("lad11nm" = "area")) %>% 
+  filter(age_group == "16 or under")
+```
+
+
+
+class: center, middle, dk-section-title
+background-image:url("https://images.pexels.com/photos/7135077/pexels-photo-7135077.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260")
+background-size: cover
+
+# Choropleth of continuous variables
+
+---
+
+# Continuous choropleth legend types
+
+There are two general purpose continuous legend types:
+
+.pull-left[
+
+```{r}
+colorNumeric("virdis", ...)
+```
+
+
+```{r, echo=FALSE, eval=TRUE}
+pal_school_leavers_numeric <- colorNumeric("viridis", london_school_leavers_sf$value)
+
+london_school_leavers_sf %>% 
+  st_transform(crs = 4326) %>% 
+  leaflet() %>% 
+  addPolygons(color = "white",
+              weight = 1,
+              fillColor = ~pal_school_leavers_numeric(value),
+              fillOpacity = 1) %>% 
+  addLegend(pal = pal_school_leavers_numeric,
+            values = ~value,
+            opacity = 1,
+            title = "School leavers") %>% 
+  frameWidget(height = "350px")
+
+```
+]
+
+.pull-right[
+
+```{r}
+colorBin("virdis", ...)
+```
+
+
+```{r, echo=FALSE, eval=TRUE}
+pal_school_leavers_bin <- colorBin("viridis", london_school_leavers_sf$value)
+
+london_school_leavers_sf %>% 
+  st_transform(crs = 4326) %>% 
+  leaflet() %>% 
+  addPolygons(color = "white",
+              weight = 1,
+              fillColor = ~pal_school_leavers_bin(value),
+              fillOpacity = 1) %>% 
+  addLegend(pal = pal_school_leavers_bin,
+            values = ~value,
+            opacity = 1,
+           title = "School leavers") %>% 
+  frameWidget(height = "350px")
+
+```
+]
+
+---
+
+# Continuous choropleth legend types
+
+`colorQuantile()` is only useful in specific circumstances.
+
+```{r, echo=FALSE, eval=TRUE}
+pal_school_leavers_quantile <- colorQuantile("viridis", london_school_leavers_sf$value)
+
+london_school_leavers_sf %>% 
+  st_transform(crs = 4326) %>% 
+  leaflet() %>% 
+  addPolygons(color = "white",
+              weight = 1,
+              fillColor = ~pal_school_leavers_quantile(value),
+              fillOpacity = 1) %>% 
+  addLegend(pal = pal_school_leavers_quantile,
+            values = ~value,
+            opacity = 1,
+           title = "School leavers") %>% 
+  frameWidget(height = "350px")
+
+```
+
+---
+
+## NA label placement
+
+Unfortunately, the placement of the NA label switches dependent on the width of the legend title.
+
+[This is a known issue](https://github.com/rstudio/leaflet/issues/615), I've provided solutions for this in both scripts.
+
+.pull-left[
+```{r, echo=FALSE, eval=TRUE}
+pal_school_leavers_numeric <- colorNumeric("viridis", london_school_leavers_sf$value)
+
+london_school_leavers_sf %>% 
+  st_transform(crs = 4326) %>% 
+  leaflet() %>% 
+  addPolygons(color = "white",
+              weight = 1,
+              fillColor = ~pal_school_leavers_numeric(value),
+              fillOpacity = 1) %>% 
+  addLegend(pal = pal_school_leavers_numeric,
+            values = ~value,
+            opacity = 1,
+            title = "Leavers") %>% 
+  frameWidget(height = "350px")
+
+```
+]
+
+.pull-right[
+
+```{r, echo=FALSE, eval=TRUE}
+pal_school_leavers_numeric <- colorNumeric("viridis", london_school_leavers_sf$value)
+
+london_school_leavers_sf %>% 
+  st_transform(crs = 4326) %>% 
+  leaflet() %>% 
+  addPolygons(color = "white",
+              weight = 1,
+              fillColor = ~pal_school_leavers_numeric(value),
+              fillOpacity = 1) %>% 
+  addLegend(pal = pal_school_leavers_numeric,
+            values = ~value,
+            opacity = 1,
+            title = "School leavers under 16") %>% 
+  frameWidget(height = "350px")
+
+```
+
+]
+
+---
+
+## Popups for NA regions
+
+Customising the popup text for NA regions is slightly complicated as it requires `pmap()`. 
+
+Please see the learn more section for this video for more information.
+
+```{r}
+popup_summary <- function(region_name, choropleth_variable){
+  
+  pmap(list(region_name, choropleth_variable), function(region_name, choropleth_variable){
+    if(is.na(choropleth_variable)){
+      ...
+    } else {
+      ...
+    }
+  })
+}
+```
+
+---
+
+class: my-turn
+
+# My turn
+
+.pull-left[
+I'm going to create this choropleth.
+
+]
+
+.pull-right[
+```{r, eval=TRUE, echo=FALSE}
+pal_school_leavers <- colorNumeric("viridis", london_school_leavers_sf$value, na.color = "pink")
+
+popup_borough_summary <- function(borough, school_leavers){
+  
+  pmap(list(borough, school_leavers), function(borough, school_leavers){
+    
+    if(is.na(school_leavers)){
+      
+      paste("No data was collected for", borough)
+      
+    } else {
+      
+      format_school_leavers <- scales::number(school_leavers, big.mark = ",")
+      
+      paste(
+        "In <b>", borough, "</b>" , format_school_leavers, "of residents left school at 16 or under"
+      )
+      
+    }
+    
+  })
+  
+}
+
+lf_london_school_leavers <- london_school_leavers_sf %>% 
+  st_transform(crs = 4326) %>% 
+  leaflet() %>% 
+  addPolygons(color = "white",
+              weight = 1,
+              fillColor = ~pal_school_leavers(value),
+              fillOpacity = 1,
+              popup = ~popup_borough_summary(lad11nm, value)) %>% 
+  addLegend(pal = pal_school_leavers,
+            values = ~value,
+            opacity = 1,
+            title = "Residents who left<br>school at 16 or under",
+            na.label = "City of London")
+
+
+
+
+
+
+# ==== NA position fix ====
+
+css_fix <- "div.info.legend.leaflet-control br {clear: both;}" # CSS to correct spacing
+html_fix <- htmltools::tags$style(type = "text/css", css_fix) 
+
+lf_london_school_leavers %>% 
+  htmlwidgets::prependContent(html_fix)
+
+```
+
+]
+
+---
+
+class: inverse
+
+# Your turn
+
+.pull-left[
+Use the `your-turn.R` script in `03_07` to build this map.
+
+- Add the provided popup function
+
+- Customise the NA label and color
+
+]
+
+.pull-right[
+```{r eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+
+south_atlantic_prisons <- south_atlantic_states %>% 
+  left_join(prisoners_per_state)
+
+popup_state_summary <- function(state, n_prisoners){
+  
+  pmap(list(state, n_prisoners), function(state, n_prisoners){
+    
+    if(is.na(n_prisoners)){
+      
+      paste(state, "does not have any state prisons")
+      
+    } else {
+      
+      format_prisons <- scales::number(n_prisoners, big.mark = ",")
+      
+      paste(
+        "There are", format_prisons, "state prisoners in", state
+      )
+      
+    }
+    
+  })
+  
+}
+
+pal_state_prisons <- colorNumeric("viridis", south_atlantic_prisons$state_prison_population, na.color = "pink")
+
+lf_south_atlantic_prisons <- south_atlantic_prisons %>% 
+  leaflet() %>% 
+  addPolygons(weight = 1,
+              fillColor = ~pal_state_prisons(state_prison_population),
+              fillOpacity = 1,
+              popup = ~popup_state_summary(name, state_prison_population)) %>% 
+  addLegend(pal = pal_state_prisons,
+            values = ~state_prison_population,
+            na.label = "District of Columbia",
+            title = "Prisoners in state prisons")
+
+css_fix <- "div.info.legend.leaflet-control br {clear: both;}" # CSS to correct spacing
+html_fix <- htmltools::tags$style(type = "text/css", css_fix) 
+
+lf_south_atlantic_prisons %>% 
+  htmlwidgets::prependContent(html_fix)
+```
+
+]
+
+

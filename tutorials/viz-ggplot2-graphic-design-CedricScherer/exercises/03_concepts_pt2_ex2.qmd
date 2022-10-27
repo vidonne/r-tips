@@ -1,0 +1,93 @@
+---
+title: "Graphic Design with ggplot2"
+subtitle: "Concepts of the {ggplot2} Package Pt. 2"
+author: "Cedric Vidonne"
+format: html
+execute:
+  message: false
+  warning: false
+editor: source
+---
+
+# Exercise 2
+
+-   Create a circular lollipop plot of reported bike shares per season.
+    -   The data is not in the right format as there are no totals.<br>How can you solve it?
+    -   Remove all legend elements (with a single line of code).
+    -   How can you add the labels next to the starting point of each lollipop?
+    -   How could you add a baseline?
+
+## Data import
+
+```{r}
+#| label: preparation
+library(tidyverse)
+
+bikes <- read_csv(
+  "https://raw.githubusercontent.com/z3tt/graphic-design-ggplot2/main/data/london-bikes-custom.csv", 
+  col_types = "Dcfffilllddddc"
+)
+
+bikes$season <- fct_inorder(bikes$season)
+
+bikes
+theme_set(theme_light(base_size = 14, base_family = "Roboto Condensed"))
+```
+
+***Don't know where to start?*** In the folder `img/3-2-circular-lollipop` you'll find step-by-step charts.
+
+## Circular Lollipop
+
+```{r}
+#| label: plot
+
+bikes |> 
+  group_by(season) |> 
+  summarise(count = sum(count)) |> 
+  ggplot(aes(x = season, y = count)) +
+  geom_point(size = 3) +
+  geom_linerange(
+    aes(ymin = 0, ymax = count)
+  ) +
+  # ugly but simple
+  # geom_hline(yintercept = 0) +
+  # nicer way
+  annotate(
+    geom = "linerange",
+    xmin = .7, xmax = 4.3, y = 0
+  )  +
+  geom_text(
+    aes(label = season, y = 0),
+    family = "Cabinet Grotesk", size = 4.5,
+    fontface = "bold", hjust = 1.15
+  ) +
+  geom_text(
+    aes(label = paste0(round(count / 10^6, 1), "M")),
+    size = 4, vjust = -1, family = "Cabinet Grotesk"
+  ) +
+  coord_polar(theta = "y") +
+  scale_x_discrete(
+    expand = c(.5, .5)
+  ) +
+  scale_y_continuous(
+    limits = c(0, 7.5e6)
+  ) +
+  theme_void() +
+  theme(
+    plot.margin = margin(rep(-100, 4))
+  )
+  
+
+
+```
+
+Add your comments and more code here.
+
+
+<br><br><br>
+
+```{r}
+#| label: i-am-done-what-now
+#| echo: false
+knitr::include_graphics("img/exercise-what-now-sd.png")
+```
