@@ -26,31 +26,43 @@ knitr::include_graphics("https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b14
 
 Thanks to [erikaduan](https://github.com/erikaduan/r_tips) for the inspiration of making a clean repo to help me learn more effectively.  
 
-# Tutorials
+## Tutorials
 
-## Data visualisation
+### Data visualisation
 
 - [`ggplot2` fundamentals](tutorials/viz-ggplot2-fundamentals-ChristianBurkhart/) by Christian Burkhart
 - [`ggplot2` graphic design](tutorials/viz-ggplot2-graphic-design-CedricScherer/) by Cedric Scherer
 - [`ggplot2` print ready graphic](tutorials/viz-ggplot2-print-ready-graphic-MaartenLambrechts/) by Maarten Lambrechts
 
-## Mapping
+### Mapping
 
 - [Mapping Geographic Data in R, with `ggplot2`](tutorials/map-geodata-ggplot2-MaartenLambrechts/) by Maarten Lambrechts
 - [Mapping with R](tutorials/map-mapping-with-r-CharlieHadley/) by Charlie Hadley
 
-## Reports
+### Reports
 
 - [`Quarto` workshop](tutorials/qmd-quarto-workshop-ThomasMock/) by Thomas Mock
 
-# Tips
+## Tips
 
-## Data visualisation
+- [Fill area between lines](examples/viz_fill_area_between_lines.r) - **viz**
 
-- [Fill area between lines](examples/viz_fill_area_between_lines.r)
+## Packages
+
+- [sf](https://github.com/r-spatial/sf), simple Features - **map**
+- [terra](https://github.com/rspatial/terra), raster data - **map**
+- [countrycode](https://github.com/vincentarelbundock/countrycode), standardize country names - **map**
+- [spData](https://github.com/Nowosad/spData) / spDataLarge, data for maps - **map**
+- [tmap](https://github.com/r-tmap/tmap), thematic maps - **map**
+- [mapsf](https://github.com/riatelab/mapsf/), thematic maps - **map**
+- [layer](https://github.com/marcosci/layer), multi layer maps - **map**
+- [esri2sf](https://github.com/yonghah/esri2sf), import esri webservice - **map**
+- [leaflet](https://github.com/rstudio/leaflet), interactive maps / [leaflet.mapboxgl](https://github.com/rstudio/leaflet.mapboxgl), include mapbox in leaflet - **map**
+- [geofacet](https://github.com/hafen/geofacet/), create facet by geo location - **map**
+- [qgisprocess](https://github.com/paleolimbot/qgisprocess) - **map**
 
 
-# Resources
+## Resources
 
 - [Awesome `ggplot2`](https://github.com/erikgahner/awesome-ggplot2)
 - [Geocomputation with R](https://geocompr.robinlovelace.net/)
