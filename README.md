@@ -47,6 +47,14 @@ inspiration of making a clean repo to help me learn more effectively.
 
 -   [Fill area between lines](examples/viz_fill_area_between_lines.r) -
     **viz**
+-   [Call Refugee Data Finder API](tips/api_rafeugee_data.R) - **api** -
+    **Update needed**
+-   [Call ArcGIS REST API](tips/map-arcgis-rest-api) - **map**/**api**
+-   [Call Activity Info API](tips/api_activityinfo_call.R) - **api**
+-   [Bind multiple excel doc](tips/doc_excel_bind_doc.R) - **doc**
+-   [Download sharepoint files](tips/doc_sharepoint_files_download.R) -
+    **doc**
+-   [ArcGIS Bridge example](tips/doc_arcgis_bridge.R) - **doc**
 
 ## Packages
 
