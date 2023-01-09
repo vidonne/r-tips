@@ -1,12 +1,10 @@
 # The Glamour of Graphics
 
-## Course Content
-
 Lesson 1. What is information design and why does it matter?
 
 Lesson 2. Course overview
 
-### The shape of data
+## The shape of data
 
 Lesson 3. Chart types
 
@@ -32,7 +30,7 @@ Lesson 8. Data encoding process
 
 - [Plastic pollution dataset](https://github.com/rfordatascience/tidytuesday/tree/master/data/2021/2021-01-26)
 
-### Layout
+## Layout
 
 Lesson 9. Grids, borders, lines
 
@@ -48,7 +46,7 @@ Lesson 14. Charts in larger layouts
 
 Lesson 15. Alignment, white space, and layout of multiple plots examples and exercises
 
-### Typography
+## Typography
 
 Lesson 16. What is typography and why does it matter?
 
@@ -66,7 +64,7 @@ Lesson 22. Pairing fonts
 
 Lesson 23. Typography beyond charts
 
-### Color
+## Color
 
 Lesson 24. Color palettes
 
@@ -82,7 +80,7 @@ Lesson 29. Color and emotion
 
 Lesson 30. The eyedropper tool and color inspiration
 
-### Special topics
+## Special topics
 
 Lesson 31. Legends
 
