@@ -91,5 +91,5 @@ Lesson 33. Combining ggplot with a vector editor
 Lesson 34. Annotations
 
 Lesson 35. Resizing plots for export
-s
+
 Lesson 36. Finding inspiration
