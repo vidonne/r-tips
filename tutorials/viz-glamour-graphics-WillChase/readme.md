@@ -34,15 +34,27 @@ Lesson 8. Data encoding process
 
 Lesson 9. Grids, borders, lines
 
+- [Lines (ggplot2)](http://www.cookbook-r.com/Graphs/Lines_(ggplot2)/)
+
 Lesson 10. Axes
+
+- [Axes (ggplot2)](http://www.cookbook-r.com/Graphs/Axes_(ggplot2)/)
 
 Lesson 11. Grids, borders, lines, and axes examples and exercises
 
 Lesson 12. Alignment
 
+- [The Ultimate Guide to Designing Data Tables](https://medium.com/design-with-figma/the-ultimate-guide-to-designing-data-tables-7db29713a85a)
+
 Lesson 13. White space
 
+- [Design Principles: Visual Perception And The Principles Of Gestalt](https://www.smashingmagazine.com/2014/03/design-principles-visual-perception-and-the-principles-of-gestalt/)
+- [How To Apply Gestalt Psychology Principles in Data Visualization](https://medium.com/nightingale/how-to-apply-gestalt-psychology-principles-in-data-visualization-6242f4f1a3de)
+
 Lesson 14. Charts in larger layouts
+
+- [Making and Breaking the Grid: A Graphic Design Layout Workshop](https://www.amazon.com/Making-Breaking-Grid-Graphic-Workshop/dp/1592531253)
+- [Space, grids, and layouts](https://www.designsystems.com/space-grids-and-layouts/)
 
 Lesson 15. Alignment, white space, and layout of multiple plots examples and exercises
 
