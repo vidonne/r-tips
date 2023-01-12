@@ -103,17 +103,33 @@ Lesson 23. Typography beyond charts
 
 Lesson 24. Color palettes
 
+- [How to Choose Colors for Your Data Visualizations](https://medium.com/nightingale/how-to-choose-the-colors-for-your-data-visualizations-50b2557fa335)
+
 Lesson 25. Color examples and exercises
+
+- [Claus Wilke slides on color palettes](https://wilkelab.org/SDS375/slides/color-scales.html#2)
 
 Lesson 26. Color models
 
+- [Color model](https://en.wikipedia.org/wiki/Color_model)
+- [HCL wizard](https://hclwizard.org/#hcl-color-space)
+
 Lesson 27. HCL color palettes in ggplot examples and exercises
+
+- [colorspace package](http://colorspace.r-forge.r-project.org/)
+- [paletteer package](https://emilhvitfeldt.github.io/paletteer/) collection of color palettes in R
 
 Lesson 28. The color wheel
 
+- [Color Theory 101: A Complete Guide to Color Wheels & Color Schemes](https://blog.hubspot.com/marketing/color-theory-design)
+
 Lesson 29. Color and emotion
 
+- [Color Psychology: The Emotional Effects of Colors](http://www.arttherapyblog.com/online/color-psychology-psychologica-effects-of-colors/)
+
 Lesson 30. The eyedropper tool and color inspiration
+
+- [A detailed guide to colors in data vis style guides](https://blog.datawrapper.de/colors-for-data-vis-style-guides/)
 
 ## Special topics
 
