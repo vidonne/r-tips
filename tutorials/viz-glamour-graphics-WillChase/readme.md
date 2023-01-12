@@ -62,19 +62,42 @@ Lesson 15. Alignment, white space, and layout of multiple plots examples and exe
 
 Lesson 16. What is typography and why does it matter?
 
+- [Why care about typography?](https://fonts.google.com/knowledge/introducing_type/why_care_about_typography)
+- [BUTTERICK’S PRACTICAL TYPOGRAPHY](https://practicaltypography.com/)
+
 Lesson 17. Typographic hierarchy
+
+- [Type study: Typographic hierarchy](https://blog.typekit.com/2011/03/17/type-study-typographic-hierarchy/)
 
 Lesson 18. Font styles
 
+- [Making sense of typographic classifications](https://fonts.google.com/knowledge/introducing_type/making_sense_of_typographic_classifications)
+- [Emotive considerations for choosing typefaces](https://fonts.google.com/knowledge/choosing_type/emotive_considerations_for_choosing_typefaces)
+
 Lesson 19. Good fonts and where to find them
+
+- [Finding fonts that won’t break the budget](https://blog.elevatedataviz.com/finding-fonts-that-wont-break-the-budget/)
+- [Will's font faves](https://docs.google.com/document/d/1ZVnRk-sCLYVTpfPb_gn_jJYfCwoP0qfD2PPq8kclxKA/edit)
 
 Lesson 20. Using custom fonts in R examples and exercises
 
+- [Modern Text Features in R](https://www.tidyverse.org/blog/2021/02/modern-text-features/#wheres-the-catch)
+
 Lesson 21. ggtext examples and exercises
+
+- [ggtext: Improved text rendering support for ggplot2](https://wilkelab.org/ggtext/)
+- [Learn to style HTML using CSS](https://developer.mozilla.org/en-US/docs/Learn/CSS)
 
 Lesson 22. Pairing fonts
 
+- [Pairing typefaces](https://fonts.google.com/knowledge/choosing_type/pairing_typefaces)
+- [Mixing fonts](https://practicaltypography.com/mixing-fonts.html)
+
 Lesson 23. Typography beyond charts
+
+- [Understanding measure/line length](https://fonts.google.com/knowledge/using_type/understanding_measure_line_length)
+- [Choosing a suitable line height](https://fonts.google.com/knowledge/using_type/choosing_a_suitable_line_height)
+- [Track carefully or not at all](https://fonts.google.com/knowledge/using_type/track_carefully_or_not_at_all)
 
 ## Color
 
