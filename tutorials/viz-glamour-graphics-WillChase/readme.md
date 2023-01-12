@@ -130,6 +130,10 @@ Lesson 29. Color and emotion
 Lesson 30. The eyedropper tool and color inspiration
 
 - [A detailed guide to colors in data vis style guides](https://blog.datawrapper.de/colors-for-data-vis-style-guides/)
+- [Instant eyedropper](http://instant-eyedropper.com/)
+- [color-slurp](https://colorslurp.com/) - Mac only
+- [color-hex](https://www.color-hex.com/)
+- [coolors](https://coolors.co/)
 
 ## Special topics
 
