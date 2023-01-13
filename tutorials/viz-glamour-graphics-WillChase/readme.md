@@ -139,12 +139,29 @@ Lesson 30. The eyedropper tool and color inspiration
 
 Lesson 31. Legends
 
+- [Accessibility Quick Wins: Remove Legends and Directly Label](https://depictdatastudio.com/accessibility-quick-wins-remove-legends-and-directly-label/)
+- [3 Ways to Enhance Your Legend](https://dataviztoday.com/shownotes/56)
+
 Lesson 32. Accessibility
+
+- [Writing Alt Text for Data Visualization](https://medium.com/nightingale/writing-alt-text-for-data-visualization-2a218ef43f81)
+- [10 Guidelines for DataViz Accessibility](https://www.highcharts.com/blog/tutorials/10-guidelines-for-dataviz-accessibility/)
+- [An Incomplete Guide to Accessible Data Visualization](https://towardsdatascience.com/an-incomplete-guide-to-accessible-data-visualization-33f15bfcc400)
+- [Viz Palette](https://projects.susielu.com/viz-palette)
+- [ggpattern](https://coolbutuseless.github.io/package/ggpattern/)
 
 Lesson 33. Combining ggplot with a vector editor
 
+- [Figma YouTube channel](https://www.youtube.com/c/Figmadesign)
+
 Lesson 34. Annotations
+
+- [ggplot2 annotations](https://ggplot2-book.org/annotations.html)
 
 Lesson 35. Resizing plots for export
 
+- [Taking Control of Plot Scaling](https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/)
+
 Lesson 36. Finding inspiration
+
+- [Data Is Plural](https://www.data-is-plural.com/)
