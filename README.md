@@ -25,6 +25,12 @@ inspiration of making a clean repo to help me learn more effectively.
 
 ## Tutorials
 
+### Data wrangling
+
+- [`tidyverse`
+  booster](tutorials/dw-tidyverse-booster-ChristianBurkhart) by
+  Christian Burkhart
+
 ### Data visualisation
 
 - [`ggplot2`

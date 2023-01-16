@@ -28,6 +28,10 @@ Thanks to [erikaduan](https://github.com/erikaduan/r_tips) for the inspiration o
 
 ## Tutorials
 
+### Data wrangling
+
+- [`tidyverse` booster](tutorials/dw-tidyverse-booster-ChristianBurkhart) by Christian Burkhart
+
 ### Data visualisation
 
 - [`ggplot2` fundamentals](tutorials/viz-ggplot2-fundamentals-ChristianBurkhart/) by Christian Burkhart
