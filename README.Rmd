@@ -36,6 +36,7 @@ Thanks to [erikaduan](https://github.com/erikaduan/r_tips) for the inspiration o
 
 - [`ggplot2` fundamentals](tutorials/viz-ggplot2-fundamentals-ChristianBurkhart/) by Christian Burkhart
 - [`ggplot2` graphic design](tutorials/viz-ggplot2-graphic-design-CedricScherer/) by Cedric Scherer
+- [Hands–On Data Visualization with `{ggplot2}`: Concepts](tutorials/viz-ggplot2-hands-on-CedricScherer/) by Cedric Scherer
 - [`ggplot2` print ready graphic](tutorials/viz-ggplot2-print-ready-graphic-MaartenLambrechts/) by Maarten Lambrechts
 - [The Glamour of Graphics](tutorials/viz-glamour-graphics-WillChase) by Will Chase
 
