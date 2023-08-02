@@ -45,6 +45,9 @@ inspiration of making a clean repo to help me learn more effectively.
   - [Hands–On Data Visualization with `{ggplot2}`:
     Concepts](tutorials/viz-ggplot2-hands-on-CedricScherer/) by Cedric
     Scherer
+  - [Hands–On Data Visualization with `{ggplot2}`: Custom
+    Design](tutorials/viz-ggplot2-hands-on-advanced-CedricScherer/) by
+    Cedric Scherer
   - [`ggplot2` print ready
     graphic](tutorials/viz-ggplot2-print-ready-graphic-MaartenLambrechts/)
     by Maarten Lambrechts
