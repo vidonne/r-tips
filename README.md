@@ -7,9 +7,7 @@
 
 ![](https://img.shields.io/badge/Language-R-blue) <!-- badges: end -->
 
-This repository contain R-tips covering varied topics such as data
-wrangling, data visualization, mapping and more to help me learn R
-stuff.
+This repository contain R-tips covering varied topics such as data wrangling, data visualization, mapping and more to help me learn R stuff.
 
 <div class="figure">
 
@@ -23,88 +21,62 @@ Artwork by @allison\_horst
 
 </div>
 
-Thanks to [erikaduan](https://github.com/erikaduan/r_tips) for the
-inspiration of making a clean repo to help me learn more effectively.
+
+Thanks to [erikaduan](https://github.com/erikaduan/r_tips) for the inspiration of making a clean repo to help me learn more effectively.  
 
 ## Tutorials
 
 ### Data wrangling
 
-  - [`tidyverse`
-    booster](tutorials/dw-tidyverse-booster-ChristianBurkhart) by
-    Christian Burkhart
+- [`tidyverse` booster](tutorials/dw-tidyverse-booster-ChristianBurkhart) by Christian Burkhart
 
 ### Data visualisation
 
-  - [`ggplot2`
-    fundamentals](tutorials/viz-ggplot2-fundamentals-ChristianBurkhart/)
-    by Christian Burkhart
-  - [`ggplot2` graphic
-    design](tutorials/viz-ggplot2-graphic-design-CedricScherer/) by
-    Cedric Scherer
-  - [Hands–On Data Visualization with `{ggplot2}`:
-    Concepts](tutorials/viz-ggplot2-hands-on-CedricScherer/) by Cedric
-    Scherer
-  - [Hands–On Data Visualization with `{ggplot2}`: Custom
-    Design](tutorials/viz-ggplot2-hands-on-advanced-CedricScherer/) by
-    Cedric Scherer
-  - [`ggplot2` print ready
-    graphic](tutorials/viz-ggplot2-print-ready-graphic-MaartenLambrechts/)
-    by Maarten Lambrechts
-  - [The Glamour of Graphics](tutorials/viz-glamour-graphics-WillChase)
-    by Will Chase
+- [`ggplot2` fundamentals](tutorials/viz-ggplot2-fundamentals-ChristianBurkhart/) by Christian Burkhart
+- [`ggplot2` graphic design](tutorials/viz-ggplot2-graphic-design-CedricScherer/) by Cedric Scherer
+- [Hands–On Data Visualization with `{ggplot2}`: Concepts](tutorials/viz-ggplot2-hands-on-CedricScherer/) by Cedric Scherer
+- [Hands–On Data Visualization with `{ggplot2}`: Custom Design](tutorials/viz-ggplot2-hands-on-advanced-CedricScherer/) by Cedric Scherer
+- [`ggplot2` print ready graphic](tutorials/viz-ggplot2-print-ready-graphic-MaartenLambrechts/) by Maarten Lambrechts
+- [The Glamour of Graphics](tutorials/viz-glamour-graphics-WillChase) by Will Chase
+- [ggplot2-uncharted](tutorials/viz-ggplot2-uncharted-YanHolz-CedricScherer) by Yan Holz and Cedric Scherer
 
 ### Mapping
 
-  - [Mapping Geographic Data in R, with
-    `ggplot2`](tutorials/map-geodata-ggplot2-MaartenLambrechts/) by
-    Maarten Lambrechts
-  - [Mapping with R](tutorials/map-mapping-with-r-CharlieHadley/) by
-    Charlie Hadley
+- [Mapping Geographic Data in R, with `ggplot2`](tutorials/map-geodata-ggplot2-MaartenLambrechts/) by Maarten Lambrechts
+- [Mapping with R](tutorials/map-mapping-with-r-CharlieHadley/) by Charlie Hadley
 
 ### Reports
 
-  - [`Quarto` workshop](tutorials/qmd-quarto-workshop-ThomasMock/) by
-    Thomas Mock
+- [`Quarto` workshop](tutorials/qmd-quarto-workshop-ThomasMock/) by Thomas Mock
 
 ## Tips
 
-  - [Fill area between lines](examples/viz_fill_area_between_lines.r) -
-    **viz**
-  - [Call Refugee Data Finder API](tips/api_rafeugee_data.R) - **api** -
-    **Update needed**
-  - [Call ArcGIS REST API](tips/map-arcgis-rest-api) - **map**/**api**
-  - [Call Activity Info API](tips/api_activityinfo_call.R) - **api**
-  - [Bind multiple excel doc](tips/doc_excel_bind_doc.R) - **doc**
-  - [Download sharepoint files](tips/doc_sharepoint_files_download.R) -
-    **doc**
-  - [ArcGIS Bridge example](tips/doc_arcgis_bridge.R) - **doc**
+- [Fill area between lines](examples/viz_fill_area_between_lines.r) - **viz**
+- [Call Refugee Data Finder API](tips/api_rafeugee_data.R) - **api** - **Update needed**
+- [Call ArcGIS REST API](tips/map-arcgis-rest-api) - **map**/**api**
+- [Call Activity Info API](tips/api_activityinfo_call.R) - **api**
+- [Bind multiple excel doc](tips/doc_excel_bind_doc.R) - **doc**
+- [Download sharepoint files](tips/doc_sharepoint_files_download.R) - **doc**
+- [ArcGIS Bridge example](tips/doc_arcgis_bridge.R) - **doc**
 
 ## Packages
 
-  - [sf](https://github.com/r-spatial/sf), simple Features - **map**
-  - [terra](https://github.com/rspatial/terra), raster data - **map**
-  - [countrycode](https://github.com/vincentarelbundock/countrycode),
-    standardize country names - **map**
-  - [spData](https://github.com/Nowosad/spData) / spDataLarge, data for
-    maps - **map**
-  - [tmap](https://github.com/r-tmap/tmap), thematic maps - **map**
-  - [mapsf](https://github.com/riatelab/mapsf/), thematic maps - **map**
-  - [layer](https://github.com/marcosci/layer), multi layer maps -
-    **map**
-  - [esri2sf](https://github.com/yonghah/esri2sf), import esri
-    webservice - **map**
-  - [leaflet](https://github.com/rstudio/leaflet), interactive maps /
-    [leaflet.mapboxgl](https://github.com/rstudio/leaflet.mapboxgl),
-    include mapbox in leaflet - **map**
-  - [geofacet](https://github.com/hafen/geofacet/), create facet by geo
-    location - **map**
-  - [qgisprocess](https://github.com/paleolimbot/qgisprocess) - **map**
+- [sf](https://github.com/r-spatial/sf), simple Features - **map**
+- [terra](https://github.com/rspatial/terra), raster data - **map**
+- [countrycode](https://github.com/vincentarelbundock/countrycode), standardize country names - **map**
+- [spData](https://github.com/Nowosad/spData) / spDataLarge, data for maps - **map**
+- [tmap](https://github.com/r-tmap/tmap), thematic maps - **map**
+- [mapsf](https://github.com/riatelab/mapsf/), thematic maps - **map**
+- [layer](https://github.com/marcosci/layer), multi layer maps - **map**
+- [esri2sf](https://github.com/yonghah/esri2sf), import esri webservice - **map**
+- [leaflet](https://github.com/rstudio/leaflet), interactive maps / [leaflet.mapboxgl](https://github.com/rstudio/leaflet.mapboxgl), include mapbox in leaflet - **map**
+- [geofacet](https://github.com/hafen/geofacet/), create facet by geo location - **map**
+- [qgisprocess](https://github.com/paleolimbot/qgisprocess) - **map**
+
 
 ## Resources
 
-  - [Awesome `ggplot2`](https://github.com/erikgahner/awesome-ggplot2)
-  - [Geocomputation with R](https://geocompr.robinlovelace.net/)
-  - [Cartographie avec R](https://rcarto.github.io/cartographie_avec_r/)
-    & [Geomatique avec R](https://rcarto.github.io/geomatique_avec_r/)
-  - [Awesome `quarto`](https://github.com/mcanouil/awesome-quarto)
+- [Awesome `ggplot2`](https://github.com/erikgahner/awesome-ggplot2)
+- [Geocomputation with R](https://geocompr.robinlovelace.net/)
+- [Cartographie avec R](https://rcarto.github.io/cartographie_avec_r/) & [Geomatique avec R](https://rcarto.github.io/geomatique_avec_r/)
+- [Awesome `quarto`](https://github.com/mcanouil/awesome-quarto)
