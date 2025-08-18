@@ -1,0 +1,96 @@
+---
+title: "Foundations of ggplot2"
+format: html
+---
+
+## Aesthetics 
+
+**Set** the value outside of aes(). No mapping needed.
+
+**Map** the column inside aes() — without quotation marks.
+
+local vs global vs overwrite mapping
+
+```{r}
+library(ggplot2)
+
+# local
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = drv)) +
+  geom_smooth()
+
+# global
+ggplot(mpg, aes(
+  x = displ, y = hwy,
+  color = drv
+)) +
+  geom_point() +
+  geom_smooth()
+
+# overwrite
+ggplot(mpg, aes(
+  x = displ, y = hwy,
+  color = drv
+)) +
+  geom_point() +
+  geom_smooth(color = "black")
+```
+
+### Mapping Logical Expressions
+
+In `ggplot2`, you don’t always have to map aesthetics to full variables — you can also use logical expressions to highlight specific subsets of your data.
+
+These expressions return `TRUE` or `FALSE`, and can be used to conditionally control things like `color`, `shape`, or `size`.
+
+
+```{r}
+# numeric
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(
+    aes(color = hwy > 30)
+  )
+
+# categorical
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(
+    aes(size = class == "suv")
+  )
+
+# multiple values
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(
+    aes(color = class %in% c("suv", "pickup"))
+  )
+```
+
+### Special Case: group
+
+Sometimes, you want to group your data for plotting — but without directly mapping a variable to a visible aesthetic like color, shape, or linetype. That’s where the group aesthetic comes in.
+
+Think of group as a behind-the-scenes instruction: “Treat these values as belonging together,” even if nothing in the plot visually encodes those groups — and thus, it also doesn't come with a legend.
+
+## Geometric Layers
+
+Every layer expects certain aesthetics to be present. 
+
+- Geometries that require two positions, usually x and y, are the most common case.
+- Others need a third aesthetic such as label for geom_text() or fill for geom_tile().
+- Some layers are minimalists: for example, geom_bar() only required an x or y position to place the bar — and calculates the height or width, respectively, itself.
+- And some demand many more, often specific aesthetics such as additional xend and yend to draw a line with geom_segment() to define start and end coordinates.
+
+Geoms are additive — think of it like building up a painting: first the background, then the foreground, then the annotations.
+
+That means: the order matters too!
+
+### Positions
+
+Examples for geom_area:
+
+- position = "stack" (default)
+- position = "identity"
+
+And if you want to compare proportions rather than raw values, there’s a potentially lesser-known gem: `position = "fill"` — this normalizes the areas to show relative shares instead, without the need for pre-calculation!
+
+"dodge" and position_dodge()
+"dodge2" or position_dodge2()
+
