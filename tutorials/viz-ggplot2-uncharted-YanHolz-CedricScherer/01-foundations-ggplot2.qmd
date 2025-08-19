@@ -94,3 +94,232 @@ And if you want to compare proportions rather than raw values, there’s a poten
 "dodge" and position_dodge()
 "dodge2" or position_dodge2()
 
+## Statistical Layers
+
+We’ll explore how to explicitly control statistical transformations in layers. Understanding the link between geoms and stats — and when to switch or customize them — helps you create clearer, more advanced visualizations.
+
+Every geom also performs a statistical transformation — and the stat argument determines which one. Most of the time, it uses a default silently in the background. But that transformation is always there.
+
+```{r}
+# default stat
+ggplot(mpg, aes(x = class, y = hwy)) +
+  geom_point(
+    alpha = .3, size = 3,
+    # default: draw data as it is
+    stat = "identity"
+  )
+
+# custom stat
+ggplot(mpg, aes(x = class, y = hwy)) +
+  geom_point(
+    size = 5,
+    # custom: first calculate summary (mean by default)
+    stat = "summary"
+  )
+```
+
+Instead of changing the stat argument in `geom_*()` functions, you can also flip your perspective and start from the transformation itself.
+
+That’s where `stat_*()` functions come in: they do the same work, but from the other direction.
+
+```{r}
+# geom approach
+ggplot(mpg, aes(y = class)) +
+  geom_bar(
+    # default transformation:
+    # calculate counts per group
+    stat = "count"
+  )
+
+# stat approach
+ggplot(mpg, aes(y = class)) +
+  stat_count(
+    # default geometry:
+    # draw a bar per group
+    geom = "bar",
+    # these arguments are ignored until
+    # you change the geom to point
+    shape = "🚗",
+    size = 10
+  )
+```
+
+The geom_*() and stat_*() functions simply have either a fixed geom or stat argument, respectively.
+
+- geom_*(**stat**, data, mapping, position, ...)
+- stat_*(**geom**, data, mapping, position, ...)
+
+Ultimately, it’s about perspective: geom_*() and stat_*() are just two sides of the same coin. You’ll likely mostly work with geoms, since they map more directly to visual output. But when you explicitly want to control what happens before drawing — to transform, summarize, or smooth your data —stat_*() layers give you that extra bit of precision.
+
+### Smart Summary Stats
+
+Want to show averages, error bars, or other summaries? `stat_summary()` helps you calculate values on the fly and choose how to draw them.
+
+```{r}
+ggplot(mpg, aes(x = class, y = hwy)) +
+  stat_summary()
+```
+
+By default, stat_summary() calculates the mean and its standard error, and uses a a point and a line to displays the three values for each group.
+
+The main arguments to know:
+
+- fun.data: what to calculate — mean_se by default
+- geom: how to draw the result — "pointrange" by default
+
+Note: As we need to pass the function itself, not the returned values, it is specified without parentheses.
+
+```{r}
+# mean on top of a boxplot
+ggplot(mpg, aes(x = class, y = hwy)) +
+  geom_boxplot() +
+  stat_summary(
+    geom = "point",
+    size = 4,
+    shape = 23,
+    color = "#00978A",
+    fill = "#88EBDD",
+    stroke = 1.2
+  )
+
+# after_stat to access value after calculation
+ggplot(mpg, aes(x = class, y = hwy)) +
+  geom_hline(yintercept = 20, color = "gray60") +
+  geom_boxplot() +
+  stat_summary(
+    fun = mean,
+    geom = "point",
+    size = 4,
+    shape = 23,
+    aes(fill = after_stat(y) > 20),
+    stroke = 1.2
+  )
+```
+
+**Advanced stuff**
+
+Alternatively to using the fun.data argument, which requires three summaries (a data frame with variables ymin, y, and ymax), you can also go the DIY route by specifying indiviual functions for each:
+
+- fun: the center (e.g. mean or median)
+- fun.min and fun.max: define the range (e.g. mean ± sd)
+
+```{r}
+# mean_sdl() is a handy helper that draws mean ± SD intervals — but by default, it shows mean ± 2 × SD. To change that, we have to use the fun.args argument.
+ggplot(mpg, aes(x = class, y = hwy)) +
+  stat_summary(
+    fun.data = mean_sdl,
+    fun.args = list(mult = 1)
+  )
+
+# Alternatively, you can pass your own functions — it's a bit more intimidating maybe, but actually not that difficult. This is how you calculate mean ± SD manually.
+ggplot(mpg, aes(x = class, y = hwy)) +
+  stat_summary(
+    fun = mean,
+    fun.max = function(y) mean(y) + sd(y),
+    fun.min = function(y) mean(y) - sd(y)
+  )
+```
+
+You’re not limited to ranges or points — you can draw any geom you like.
+
+Let's draw some proper error bars with "caps" by combining apointrange and errorbar geometry (in two separate stat_summary() calls).
+
+But not enough! To be more descriptive, we add another summary layer to enrich the chart with labels showing the average highway miles for each vehicle class 🔥
+
+To access these values, we once again use after_stat(), this time in combination with round() to shorten those long decimal values to a single digit.
+
+```{r}
+ggplot(mpg, aes(x = class, y = hwy)) +
+  stat_summary(
+    geom = "errorbar",
+    fun.max = function(y) mean(y) + sd(y),
+    fun.min = function(y) mean(y) - sd(y),
+    width = .3
+  ) +
+  stat_summary(
+    geom = "point",
+    fun = mean,
+    size = 2
+  ) +
+  stat_summary(
+    geom = "text",
+    fun = mean,
+    aes(label = after_stat(round(y, 1))),
+    hjust = -0.3
+  )
+```
+
+### Exercise
+
+1. Boxplot boost
+
+```{r}
+ggplot(mpg, aes(x = class, y = hwy)) +
+  geom_boxplot() +
+  stat_summary(
+    geom = "point",
+    size = 4,
+    color = "red",
+    shape = 1,
+    stroke = 2
+  ) +
+  stat_summary(
+    fun = min,
+    geom = "point",
+    shape = 17, # triangle
+    size = 3,
+    color = "#00978A"
+  ) +
+  stat_summary(
+    fun = max,
+    geom = "point",
+    shape = 15, # square
+    size = 3,
+    color = "#00978A"
+  )
+```
+
+4. A mean treat
+
+```{r}
+df <- data.frame(
+  year = rep(factor(2018:2024), times = 5),
+  scoops = c(180, 190, 160, 175, 200, 210, 195, 70, 75, 60, 65, 70, 78, 73, 40, 50, 45, 48, 60, 66, 58, 120, 140, 130, 185, 160, 175, 230, 80, 95, 85, 88, 110, 120, 105),
+  flavor = rep(c("Classic Vanilla", "Chocolate", "Mango Sorbet", "Special Flavor", "Strawberry"), each = 7)
+)
+
+ggplot(df, aes(x = flavor, y = scoops)) +
+  stat_summary(
+    aes(color = flavor),
+    geom = "point",
+    fun = mean,
+    shape = 4,
+    stroke = 4,
+    size = 6
+  ) +
+  geom_point(
+    aes(fill = flavor),
+    shape = 21, size = 3, alpha = 0.5
+  ) +
+  theme_minimal() +
+  # this removes all legends
+  theme(legend.position = "none")
+```
+
+5. Heatmap mishap
+
+```{r}
+set.seed(42)
+df <- data.frame(
+  subject = sample(c("Math", "Science", "History", "English"), size = 60, replace = TRUE),
+  grade = sample(c("A", "B", "C", "D"), size = 60, replace = TRUE),
+  n = sample(1:10, size = 60, replace = TRUE) # students in each exam
+)
+
+ggplot(df, aes(x = grade, y = subject, z = n)) +
+  stat_summary_2d(
+    fun = sum,
+    color = "white",
+    linewidth = 0.6
+  )
+```
