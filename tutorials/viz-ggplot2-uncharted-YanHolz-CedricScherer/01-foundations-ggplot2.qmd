@@ -323,3 +323,245 @@ ggplot(df, aes(x = grade, y = subject, z = n)) +
     linewidth = 0.6
   )
 ```
+## Coordinate Systems
+
+Coordinate systems determine how data is projected onto the plotting canvas. They influence the layout, orientation, and even the perceived shape of your geometries.
+
+- Linear Coordinates 
+
+These systems maintain the direct, proportional mapping of data values to visual positions, preserving the original geometric shapes and relationships.
+
+- Non-linear Coordinates 
+
+These systems transform the data's geometry by applying transformations that alter shapes, angles, or distances. They are essential for specialized plots like pie charts or maps.
+
+By the way: You can also set just the lower or upper limit and specify the other as NA to use the data’s minimum or maximum, respectively. Give it a try in the example above!
+
+## Scales
+
+Scales determine how raw data gets converted into colors, sizes, axes, and more. They’re the link between data values and their visual representation.
+
+Together, aesthetics and scales form a two-part system:
+
+- aes() maps your data columns to visual properties.
+- scale_*() controls how those properties appear in the final plot.
+
+### Controlling Scales
+
+- Changing axis limits — like filtering the data range or capping extreme values
+- Switching color palettes — like using custom colors for discrete groups or gradients for continuous data
+- Styling axes and legends — like adjusting tick marks, re-labeling categories, or modifying the legend’s appearance
+- Transforming the data — like applying a log scale on the y-axis or aggregating values into bins
+
+Most scale_*() functions have share some general arguments:
+
+- name: set a custom axis or legend title
+- breaks: define steps to display along the axis or in the legend
+- labels: customize the value text on the axis or in a legend
+
+#### Positional Encodings
+
+Here are some common arguments specific to **positional scales**:
+
+- limits: set the value range of the data
+- expand: control the padding around the scale limits
+- position: move the axis to the "top" or "bottom", "left" or "right"
+- transform: apply a transformation to an axis (before plotting!)
+- na.translate: whether to include NA as a category for discrete scales
+- sec.axis: display a secondary axis for continuous scales
+
+```{r}
+# discrete
+ggplot(msleep, aes(x = vore, y = sleep_rem)) +
+  geom_boxplot() +
+  scale_x_discrete(
+    # change axis title
+    name = "Diet",
+    # overwrite labels on x-axis
+    labels = c("carni" = "Carnivore", "herbi" = "Herbivore", "insecti" = "Insectivore", "omni" = "Omnivore"),
+    # reorder categories
+    limits = c("herbi", "omni", "carni", "insecti"),
+    # remove unknown group
+    na.translate = FALSE,
+    # place on the top of the panel
+    position = "top"
+  )
+
+# continuous
+ggplot(msleep, aes(x = vore, y = sleep_rem)) +
+  geom_boxplot() +
+  scale_y_continuous(
+    # change axis title
+    name = "Hours of REM sleep",
+    # adjust limits (may filter data!)
+    limits = c(NA, 3),
+    # control padding on bottom and top
+    expand = expansion(add = c(.2, .5)),
+    # set tick marks
+    breaks = c(0, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.25, 3), # custom steps
+    # breaks = seq(0, 3, by = 0.5), # regular steps
+    # add an additional axis on the right
+    sec.axis = dup_axis()
+  )
+```
+
+#### Visual Encodings
+
+```{r}
+# discrete
+ggplot(msleep, aes(x = sleep_total, y = sleep_rem)) +
+  geom_point(aes(fill = vore, shape = vore), size = 4) +
+  scale_fill_discrete(
+    # change legend title
+    name = "Diet:",
+    # apply custom fill colors
+    type = c("#d13760", "#00978a", "#663e8e", "#c69612"),
+    # overwrite labels in legend
+    labels = c("carni" = "Carnivore", "herbi" = "Herbivore", "insecti" = "Insectivore", "omni" = "Omnivore")
+  ) +
+  # scale_shape() is the default but to set
+  # custom shapes, we need scale_shape_manual()
+  scale_shape_manual(
+    # change legend title
+    name = "Diet:",
+    # apply custom shapes
+    values = 21:24, na.value = 4,
+    # overwrite labels in legend
+    labels = c("carni" = "Carnivore", "herbi" = "Herbivore", "insecti" = "Insectivore", "omni" = "Omnivore")
+  )
+
+# continuous
+ggplot(msleep, aes(x = sleep_total, y = sleep_rem)) +
+  geom_point(aes(fill = awake, size = awake), shape = 21) +
+  scale_fill_continuous(
+    # change legend title
+    name = "Hours awake:",
+    # apply a different (in-built) palette
+    type = "viridis", direction = -1,
+    # change color for NA category
+    na.value = "grey70",
+    # add this to merge the 2 legends type
+    # guide = guide_legend()
+    # set legend steps
+    breaks = 1:4*5
+  ) +
+  scale_size(
+    # change legend title
+    name = "Hours awake:",
+    # adjust bubble sizes
+    range = c(1, 4)
+  )
+```
+
+### Replacing Default Scales
+
+Binning data: group values of a continuous variable into regular "bins" — either along positional scales or for visual aesthetics likefill and size.
+
+```{r}
+ggplot(msleep, aes(x = sleep_total, y = sleep_rem)) +
+  geom_point(aes(fill = awake, size = awake), shape = 21) +
+  scale_fill_binned(
+    # change legend title
+    name = "Hours awake:",
+    # apply a different (in-built) palette
+    type = "viridis", direction = -1,
+    # change guide to merge legend
+    guide = guide_bins()
+  ) +
+  scale_size_binned(
+    # change legend title
+    name = "Hours awake:",
+    # adjust bubble sizes
+    range = c(1, 4)
+  )
+```
+
+Transforming axes: There are convenient shortcuts for common transformations with preset transform arguments:*_log10(), *_sqrt(), and *_reverse().
+
+```{r}
+set.seed(123)
+x <- (1:10)*100
+dat <- data.frame(x = x, y = rnorm(100, 1000, 250) * x)
+
+ggplot(dat, aes(x = x, y = y)) +
+  geom_point() +
+  stat_smooth(method = "lm") +
+  # apply log transformation to x axis
+  scale_x_log10() +
+  # revert y axis
+  scale_y_reverse()
+```
+
+Replacing palettes: Use pre-built functions to apply popular palettes like ColorBrewer and viridis — e.g., *_brewer(), *_distiller(), and *_viridis_c()
+
+```{r}
+ggplot(mpg, aes(x = factor(year), y = hwy)) +
+  geom_boxplot(aes(fill = drv)) +
+  scale_fill_brewer(
+    palette = "Set2",
+    name = "Drive train"
+  )
+```
+
+Generating palettes: Not happy with the default palettes for continuous values? Define your own using *_gradient(), *_gradient2(), or *_gradientn().
+
+```{r}
+df <- data.frame(x = 0:10, y = -5:5)
+
+ggplot(df, aes(x, y, fill = y)) +
+  geom_col(color = "grey30") +
+  scale_fill_gradient2(
+    low = "#d13760",
+    mid = "white",
+    high = "#663e8e",
+    midpoint = 0,
+    name = "Deviance"
+  ) +
+  geom_hline(yintercept = 0, color = "grey30")
+```
+
+1. No guide required
+
+```{r}
+library(palmerpenguins) # make penguins data available
+
+# Define label positions and text
+position <- data.frame(
+  x = c(34, 50, 57),
+  y = c(20, 13, 19),
+  label = c("Adelie", "Gentoo", "Chinstrap")
+)
+
+ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = species)) +
+  geom_point(aes(size = body_mass_g), alpha = 0.7) +
+  geom_text(
+    data = position,
+    aes(x = x, y = y, label = label, color = label),
+    size = 6, fontface = "bold"
+  ) +
+  scale_color_discrete(guide = "none")
+```
+
+6. Double vision done right
+
+```{r}
+# Temperature data in Celsius (Barcelona, 2024)
+temp_barcelona <- data.frame(
+  month = 1:12,
+  temp_avg = c(8.3, 9.4, 11.7, 13.3, 16.7, 21.1, 23.9, 24.4, 21.7, 17.2, 12.2,
+8.9)
+)
+
+ggplot(temp_barcelona, aes(x = month, y = temp_avg)) +
+  geom_line() +
+  geom_point() +
+  scale_y_continuous(
+    name = "Temperature (°C)",
+    breaks = seq(0, 25, by = 5),
+    sec.axis = sec_axis(
+      trans = ~ . * 9/5 + 32,
+      name = "Temperature (°F)",
+      breaks = seq(45, 80, by = 5)
+    )
+  )
+```
